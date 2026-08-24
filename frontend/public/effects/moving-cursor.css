@@ -1,0 +1,261 @@
+:root {
+  --cursor-color: var(--brand-accent);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html.md-custom-cursor,
+  html.md-custom-cursor * {
+    cursor: none !important;
+  }
+
+  .md-cursor-dot,
+  .md-cursor-ring {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2147483647;
+    pointer-events: none;
+    opacity: 0;
+    transform: translate3d(-50%, -50%, 0);
+    transition: opacity 180ms ease, width 180ms ease, height 180ms ease, border-width 180ms ease, background-color 180ms ease;
+    will-change: transform, opacity, width, height;
+  }
+
+  .md-cursor-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--cursor-color);
+  }
+
+  .md-cursor-ring {
+    width: 34px;
+    height: 34px;
+    border: 2px solid var(--cursor-color);
+    border-radius: 999px;
+    background: transparent;
+    opacity: 0;
+  }
+
+  html.md-cursor-visible .md-cursor-dot {
+    opacity: 1;
+  }
+
+  html.md-cursor-visible .md-cursor-ring {
+    opacity: 0.55;
+  }
+
+  html.md-cursor-hovering .md-cursor-dot {
+    width: 6px;
+    height: 6px;
+  }
+
+  html.md-cursor-hovering .md-cursor-ring {
+    width: 46px;
+    height: 46px;
+    opacity: 0.82;
+  }
+
+  .md-float-soft {
+    animation: mdFloatSoft 6.2s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  .md-float-soft-alt {
+    animation: mdFloatSoftAlt 5.4s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  .md-float-soft-slow {
+    animation: mdFloatSoftSlow 6.8s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  .md-breathe {
+    animation: mdBreathe 5s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  .md-orbit-drift {
+    animation: mdOrbitDrift 7s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  .md-orbit-drift-reverse {
+    animation: mdOrbitDriftReverse 6.4s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  .md-micro-hover {
+    transition: transform 240ms ease, box-shadow 240ms ease, filter 240ms ease;
+  }
+
+  .md-micro-hover:hover {
+    transform: translate3d(0, -3px, 0);
+    filter: saturate(1.08);
+  }
+}
+
+.tilt-card {
+  transform-style: preserve-3d;
+  animation: mdCardHoverDrift 7.2s ease-in-out infinite;
+  transition: transform 360ms ease-out, box-shadow 360ms ease-out, border-color 240ms ease;
+  will-change: transform;
+}
+
+.tilt-card:nth-child(2n) {
+  animation-duration: 6.4s;
+  animation-name: mdCardHoverDriftAlt;
+}
+
+.tilt-card:nth-child(3n) {
+  animation-duration: 7.6s;
+  animation-name: mdCardHoverDriftSlow;
+}
+
+.tilt-card.is-tilting {
+  animation-play-state: paused;
+  box-shadow: 0 24px 80px color-mix(in srgb, var(--cursor-color) 18%, transparent);
+}
+
+.tilt-card--featured {
+  position: relative;
+  overflow: hidden;
+  background: var(--cursor-color) !important;
+  color: #ffffff;
+  box-shadow: 0 20px 60px color-mix(in srgb, var(--cursor-color) 26%, transparent);
+}
+
+.tilt-card--featured .tilt-card-ribbon {
+  position: absolute;
+  top: 16px;
+  right: 14px;
+  z-index: 2;
+  transform: rotate(-6deg);
+  border-radius: 6px;
+  background: #ffffff;
+  color: var(--cursor-color);
+  padding: 7px 10px;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tilt-card--featured p,
+.tilt-card--featured span,
+.tilt-card--featured h3 {
+  color: #ffffff !important;
+}
+
+.tilt-card--featured .tilt-card-chip {
+  border-color: rgba(255, 255, 255, 0.34) !important;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+@keyframes mdFloatSoft {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(8px, -12px, 0);
+  }
+}
+
+@keyframes mdFloatSoftAlt {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(-9px, 10px, 0);
+  }
+}
+
+@keyframes mdFloatSoftSlow {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(5px, -15px, 0);
+  }
+}
+
+@keyframes mdBreathe {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.035);
+  }
+}
+
+@keyframes mdOrbitDrift {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate3d(10px, -10px, 0) rotate(0.7deg);
+  }
+}
+
+@keyframes mdOrbitDriftReverse {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate3d(-10px, 8px, 0) rotate(-0.7deg);
+  }
+}
+
+@keyframes mdCardHoverDrift {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(4px, -8px, 0);
+  }
+}
+
+@keyframes mdCardHoverDriftAlt {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(-5px, 6px, 0);
+  }
+}
+
+@keyframes mdCardHoverDriftSlow {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(6px, -5px, 0);
+  }
+}
+
+@media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+  html,
+  html * {
+    cursor: auto;
+  }
+
+  .md-cursor-dot,
+  .md-cursor-ring {
+    display: none;
+  }
+
+  .md-float-soft,
+  .md-float-soft-alt,
+  .md-float-soft-slow,
+  .md-breathe,
+  .md-orbit-drift,
+  .md-orbit-drift-reverse,
+  .tilt-card {
+    animation: none !important;
+  }
+
+  .tilt-card {
+    transform: none !important;
+  }
+}

@@ -1,0 +1,79 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Space+Grotesk:wght@700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --brand-accent: #f06a00;
+  --cursor-color: var(--brand-accent);
+  color: #f7f7f5;
+  background: #0b0c18;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  overflow-x: hidden;
+  font-family: Manrope, Inter, system-ui, sans-serif;
+}
+
+select option,
+select optgroup {
+  background: #ffffff;
+  color: #000000;
+}
+
+select option:checked,
+select option:hover,
+select option:focus {
+  background: #f1f1ee;
+  color: #000000;
+}
+
+.bg-white,
+.bg-bone,
+.bg-soft {
+  color: #000000;
+}
+
+.bg-ink,
+.bg-deep,
+.bg-navy {
+  color: #ffffff;
+}
+
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+}
+
+::selection {
+  background: var(--brand-accent);
+  color: #ffffff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
