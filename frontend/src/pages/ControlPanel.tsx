@@ -178,6 +178,9 @@ function ResourceManager({ resource, title, fields }: { resource: string; title:
 function SingletonEditor({ resource, title }: { resource: string; title: string }) {
   const [value, setValue] = useState<Record<string, unknown>>({});
   const [message, setMessage] = useState("");
+  useEffect(() => {
+    setValue(adminApi.getSingleton(resource));
+  }, [resource]);
   async function save() {
     try {
       await adminApi.updateSingleton(resource, value);
