@@ -1,0 +1,1 @@
+import{j as o}from"./motion-BNxUHPLG.js";function a(t,i=1200){return t.includes("ik.imagekit.io")?t.replace("/tr:w-1400,fo-auto/",`/tr:w-${i},fo-auto,f-webp/`):t}function u({media:t,className:i,width:r=1200,loading:e="lazy"}){return o.jsx("img",{className:i,src:a(t.src,r),alt:t.alt,loading:e,decoding:"async"})}export{u as I};

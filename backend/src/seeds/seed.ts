@@ -15,7 +15,7 @@ import { Video } from "../models/Video.js";
 async function seed() {
   await connectDatabase();
 
-  const adminPassword = env.ADMIN_PASSWORD ?? "ChangeMe123!";
+  const adminPassword = env.ADMIN_PASSWORD;
   const admin = await Admin.findOne({ email: env.ADMIN_EMAIL }).select("+password");
   if (admin) {
     admin.password = adminPassword;

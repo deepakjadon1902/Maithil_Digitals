@@ -1,5 +1,5 @@
 import { Suspense, lazy } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import { Footer } from "./components/Footer";
 import { Navbar } from "./components/Navbar";
 import { PageTransition } from "./components/PageTransition";
@@ -23,9 +23,12 @@ const ControlPanel = lazy(() => import("./pages/ControlPanel").then((module) => 
 const NotFound = lazy(() => import("./pages/NotFound").then((module) => ({ default: module.NotFound })));
 
 export default function App() {
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith("/admin");
+
   return (
     <>
-      <Navbar settings={settings} />
+      {!isAdminRoute ? <Navbar settings={settings} /> : null}
       <Suspense fallback={<div className="min-h-screen bg-ink p-8 pt-32 text-white"><LoadingState /></div>}>
         <PageTransition>
           <Routes>
@@ -48,7 +51,7 @@ export default function App() {
           </Routes>
         </PageTransition>
       </Suspense>
-      <Footer settings={settings} />
+      {!isAdminRoute ? <Footer settings={settings} /> : null}
     </>
   );
 }

@@ -10,7 +10,7 @@ const envSchema = z.object({
   JWT_SECRET: z.string().min(24, "JWT_SECRET must be at least 24 characters"),
   JWT_EXPIRES_IN: z.string().default("7d"),
   ADMIN_EMAIL: z.string().email().default("maithildigitals@gmail.com"),
-  ADMIN_PASSWORD: z.string().min(8).optional(),
+  ADMIN_PASSWORD: z.string().min(8).default("maithildigitals@108"),
   IMAGEKIT_PUBLIC_KEY: z.string().optional(),
   IMAGEKIT_PRIVATE_KEY: z.string().optional(),
   IMAGEKIT_URL_ENDPOINT: z.string().optional(),

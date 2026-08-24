@@ -1,4 +1,4 @@
-import { BarChart3, FileText, ImageUp, LayoutDashboard, Lock, LogOut, Plus, Save, Search, Settings, Trash2 } from "lucide-react";
+import { BarChart3, Eye, EyeOff, FileText, ImageUp, LayoutDashboard, Lock, LogOut, Plus, Save, Search, Settings, Trash2 } from "lucide-react";
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { SectionHeading } from "../components/SectionHeading";
@@ -40,7 +40,7 @@ export function ControlPanel() {
   return (
     <>
       <SEO seo={{ title: "Admin Dashboard | Maithil Digitals", description: "Administration dashboard for Maithil Digitals.", robots: "noindex,nofollow" }} />
-      <div className="min-h-screen bg-ink pt-20 text-white">
+      <div className="min-h-screen bg-ink text-white">
         <div className="mx-auto grid max-w-7xl gap-6 px-4 py-8 lg:grid-cols-[280px_1fr]">
           <aside className="rounded-premium border border-white/10 bg-white/[0.04] p-4">
             <div className="mb-6 flex items-center gap-3 px-2">
@@ -74,7 +74,8 @@ export function ControlPanel() {
 
 function AdminLogin({ onSuccess }: { onSuccess: () => void }) {
   const [email, setEmail] = useState("maithildigitals@gmail.com");
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState("maithildigitals@108");
+  const [showPassword, setShowPassword] = useState(false);
   const [status, setStatus] = useState("");
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -95,7 +96,17 @@ function AdminLogin({ onSuccess }: { onSuccess: () => void }) {
         <label className="mt-8 block text-sm font-bold">Email</label>
         <input className={adminInput} value={email} onChange={(e) => setEmail(e.target.value)} type="email" />
         <label className="mt-4 block text-sm font-bold">Password</label>
-        <input className={adminInput} value={password} onChange={(e) => setPassword(e.target.value)} type="password" />
+        <div className="relative mt-2">
+          <input className={`${adminInput} mt-0 pr-12`} value={password} onChange={(e) => setPassword(e.target.value)} type={showPassword ? "text" : "password"} />
+          <button
+            aria-label={showPassword ? "Hide password" : "Show password"}
+            className="absolute right-3 top-1/2 grid size-8 -translate-y-1/2 place-items-center rounded-full text-muted transition hover:bg-white/10 hover:text-white"
+            type="button"
+            onClick={() => setShowPassword((value) => !value)}
+          >
+            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+          </button>
+        </div>
         {status ? <p className="mt-4 text-sm text-orange">{status}</p> : null}
         <Button className="mt-6 w-full" type="submit">Sign In</Button>
       </form>
