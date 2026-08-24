@@ -7,8 +7,8 @@
 :root {
   --brand-accent: #f06a00;
   --cursor-color: var(--brand-accent);
-  color: #f7f7f5;
-  background: #0b0c18;
+  color: #1f2040;
+  background: #ffffff;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -28,6 +28,8 @@ body {
   min-width: 320px;
   overflow-x: hidden;
   font-family: Manrope, Inter, system-ui, sans-serif;
+  background: #ffffff;
+  color: #1f2040;
 }
 
 select option,

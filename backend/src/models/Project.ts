@@ -16,6 +16,7 @@ const projectSchema = new Schema(
     deliverables: [{ type: String }],
     results: [{ label: String, value: String }],
     heroImage: { type: mediaSchema, default: {} },
+    imageUrl: { type: String, default: "" },
     gallery: [mediaSchema],
     videoUrl: { type: String, default: "" },
     relatedServices: [{ type: Schema.Types.ObjectId, ref: "Service" }],

@@ -12,7 +12,7 @@ type Props = {
 
 export function Button({ children, variant = "primary", href, icon = true, className, ...props }: Props) {
   const classes = clsx(
-    "md-micro-hover inline-flex min-h-12 items-center justify-center gap-2 rounded-premium px-5 text-sm font-bold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange",
+    "md-micro-hover inline-flex min-h-11 items-center justify-center gap-2 rounded-premium px-5 text-sm font-bold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange",
     variant === "primary" && "bg-orange text-white hover:bg-orangeHover",
     variant === "secondary" && "border border-white/15 bg-white text-ink hover:bg-soft",
     variant === "ghost" && "border border-white/15 text-white hover:border-orange hover:text-orange",

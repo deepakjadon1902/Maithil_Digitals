@@ -1,9 +1,10 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "/api";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "https://maithil-digitals.onrender.com/api";
 const DEMO_EMAIL = "maithildigitals@gmail.com";
 const DEMO_PASSWORD = "maithildigitals@108";
 const SESSION_KEY = "md_demo_admin_session";
 const PASSWORD_KEY = "md_demo_admin_password";
 const STORE_PREFIX = "md_demo_admin_";
+const CONTENT_EVENT = "md-content-updated";
 
 type ApiResponse<T> = {
   success: boolean;
@@ -60,13 +61,18 @@ function readItems(resource: string) {
 function writeItems(resource: string, items: Record<string, unknown>[]) {
   if (!hasStorage()) return;
   window.localStorage.setItem(`${STORE_PREFIX}${resource}`, JSON.stringify(items));
+  window.dispatchEvent(new Event(CONTENT_EVENT));
 }
 
 function readSingleton(resource: string) {
   if (!hasStorage()) return demoSingletons[resource] ?? {};
   const key = `${STORE_PREFIX}${resource}`;
   const stored = window.localStorage.getItem(key);
-  if (stored) return JSON.parse(stored) as Record<string, unknown>;
+  if (stored) {
+    const parsed = JSON.parse(stored) as Record<string, unknown>;
+    if (resource === "seo" && !("home" in parsed) && !("services" in parsed)) return demoSingletons.seo;
+    return { ...(demoSingletons[resource] ?? {}), ...parsed };
+  }
 
   const seeded = demoSingletons[resource] ?? {};
   window.localStorage.setItem(key, JSON.stringify(seeded));
@@ -76,6 +82,7 @@ function readSingleton(resource: string) {
 function writeSingleton(resource: string, value: Record<string, unknown>) {
   if (!hasStorage()) return;
   window.localStorage.setItem(`${STORE_PREFIX}${resource}`, JSON.stringify(value));
+  window.dispatchEvent(new Event(CONTENT_EVENT));
 }
 
 function requireDemoSession() {
@@ -146,7 +153,7 @@ export const adminApi = {
   dashboard: () => withDemoFallback(() => adminRequest<Record<string, unknown>>("/admin/dashboard"), demoDashboard),
   list: (resource: string) => withDemoFallback(() => adminRequest<ListResult>(`/admin/${resource}`), () => demoList(resource)),
   create: (resource: string, payload: Record<string, unknown>) => withDemoFallback(
-    () => adminRequest(`/admin/${resource}`, { method: "POST", body: JSON.stringify(payload) }),
+    () => adminRequest(`/admin/${resource}`, { method: "POST", body: JSON.stringify(toApiPayload(resource, payload)) }),
     () => {
       requireDemoSession();
       const items = readItems(resource);
@@ -156,7 +163,7 @@ export const adminApi = {
     }
   ),
   update: (resource: string, id: string, payload: Record<string, unknown>) => withDemoFallback(
-    () => adminRequest(`/admin/${resource}/${id}`, { method: "PUT", body: JSON.stringify(payload) }),
+    () => adminRequest(`/admin/${resource}/${id}`, { method: "PUT", body: JSON.stringify(toApiPayload(resource, payload)) }),
     () => {
       requireDemoSession();
       const items = readItems(resource).map((item) => String(item._id) === id ? { ...item, ...payload, _id: id } : item);
@@ -173,7 +180,7 @@ export const adminApi = {
     }
   ),
   updateSingleton: (resource: string, payload: Record<string, unknown>) => withDemoFallback(
-    () => adminRequest(`/admin/${resource}`, { method: "PUT", body: JSON.stringify(payload) }),
+    () => adminRequest(`/admin/${resource}`, { method: "PUT", body: JSON.stringify(toApiSingletonPayload(resource, payload)) }),
     () => {
       requireDemoSession();
       writeSingleton(resource, payload);
@@ -224,10 +231,10 @@ function demoUpload(file: File, alt: string) {
 
 const demoSeeds: Record<string, Record<string, unknown>[]> = {
   services: [
-    { _id: "demo-service-1", title: "Digital Marketing", slug: "digital-marketing", shortDescription: "Digital strategy built around your business.", category: "Growth", description: "Campaign planning, positioning and channel execution." }
+    { _id: "demo-service-1", title: "Social Media Management", slug: "social-media-management", shortDescription: "We manage your social media presence from strategy to publishing.", category: "Social Media", cta: "Explore Social Media", includes: "Content planning, Instagram management, Facebook management, Captions and hashtags, Posting and scheduling", tags: "Instagram, Facebook, Strategy" }
   ],
   projects: [
-    { _id: "demo-project-1", title: "Brand Growth Campaign", slug: "brand-growth-campaign", client: "Local retail brand", category: "Digital Marketing", year: "2026", shortDescription: "A focused campaign system for digital presence." }
+    { _id: "demo-project-1", title: "Restaurant Content System", slug: "restaurant-content-system", client: "Restaurant Project", category: "Food Photography", year: "2026", shortDescription: "Social media management, food photography and reels for a local restaurant.", status: "published" }
   ],
   videos: [
     { _id: "demo-video-1", title: "Campaign Showreel", slug: "campaign-showreel", category: "Brand Video", videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", description: "Sample campaign video entry." }
@@ -248,13 +255,101 @@ const demoSeeds: Record<string, Record<string, unknown>[]> = {
     { _id: "demo-faq-1", question: "What services do you provide?", answer: "Digital marketing, SEO, social media, branding, websites and video support.", category: "General", sortOrder: 1 }
   ],
   enquiries: [
-    { _id: "demo-enquiry-1", name: "Demo Visitor", email: "visitor@example.com", phone: "9999999999", status: "new", message: "This is a demo enquiry." }
+    { _id: "demo-enquiry-1", name: "Demo Visitor", email: "visitor@example.com", phone: "9999999999", businessName: "Demo Business", businessType: "Local Business", servicesRequired: "Complete Digital Marketing", status: "New", message: "This is a demo enquiry." }
   ]
 };
 
 const demoSingletons: Record<string, Record<string, unknown>> = {
-  settings: { siteName: "Maithil Digitals", email: DEMO_EMAIL, phone: ["9917006983", "9625643209"] },
-  home: { heroTitle: "Maithil Digitals", heroSubtitle: "Digital marketing, creative and web experiences." },
-  about: { title: "About Maithil Digitals", description: "Demo about page content." },
-  seo: { title: "Maithil Digitals", description: "Demo SEO settings.", robots: "index,follow" }
+  settings: {
+    siteName: "Maithil Digitals",
+    tagline: "Your Digital Identity",
+    email: DEMO_EMAIL,
+    phone: ["9917006983", "9625643209"],
+    whatsapp: "9917006983",
+    address: "Kosi Kalan, Mathura, Uttar Pradesh, India",
+    footerDescription: "Strategy. Content. Creativity. Growth. We help businesses build a digital presence that looks professional, connects with their audience and helps them grow.",
+    instagramUrl: "https://instagram.com/",
+    facebookUrl: "https://facebook.com/",
+    whatsappUrl: "https://wa.me/919917006983",
+    emailUrl: "mailto:maithildigitals@gmail.com"
+  },
+  packages: {
+    items: [
+      { name: "Starter", label: "For businesses starting their digital journey.", description: "A focused starting plan for basic content and presence.", cta: "View Package", features: ["Profile cleanup", "Basic content plan", "Starter creatives"] },
+      { name: "Growth", label: "For businesses ready to build a consistent online presence.", description: "A stronger monthly system for content, shoots and publishing.", badge: "Most Popular", cta: "View Package", features: ["Monthly content calendar", "Reels support", "Creative posts", "Performance review"] },
+      { name: "Custom", label: "For businesses that need a complete digital solution.", description: "A tailored package for marketing, content production, branding and ads.", cta: "Talk To Us", features: ["Custom strategy", "Photoshoot planning", "Advertising support"] }
+    ]
+  },
+  seo: {
+    home: { title: "Maithil Digitals | Digital Marketing, Content Creation & Photography", description: "Maithil Digitals helps businesses in Mathura, Kosi and nearby areas build a professional digital identity through social media, reels, photography, branding and digital advertising.", robots: "index,follow" },
+    services: { title: "Services | Maithil Digitals", description: "Explore digital marketing, SEO, social media, advertising, branding, web design and video production services.", robots: "index,follow" },
+    work: { title: "Selected Work | Maithil Digitals", description: "Explore brand, campaign, website and video work by Maithil Digitals.", robots: "index,follow" },
+    videos: { title: "Videos | Maithil Digitals", description: "Watch campaign videos, brand videos and social media content by Maithil Digitals.", robots: "index,follow" },
+    contact: { title: "Contact Maithil Digitals", description: "Start a project with Maithil Digitals in Kosi Kalan, Mathura.", robots: "index,follow" }
+  }
 };
+
+function mediaFrom(url: unknown, alt: unknown) {
+  return typeof url === "string" && url.trim() ? { src: url.trim(), alt: typeof alt === "string" ? alt : "Maithil Digitals media" } : undefined;
+}
+
+function toArray(value: unknown) {
+  if (Array.isArray(value)) return value.map(String).filter(Boolean);
+  if (typeof value === "string") return value.split(",").map((item) => item.trim()).filter(Boolean);
+  return [];
+}
+
+function toApiPayload(resource: string, payload: Record<string, unknown>) {
+  if (resource === "services") {
+    return {
+      ...payload,
+      featuredImage: mediaFrom(payload.imageUrl, payload.title),
+      includes: toArray(payload.includes),
+      features: toArray(payload.includes).length ? toArray(payload.includes) : toArray(payload.tags),
+      isActive: payload.isActive ?? true
+    };
+  }
+  if (resource === "projects") {
+    return {
+      ...payload,
+      heroImage: mediaFrom(payload.imageUrl, payload.title),
+      imageUrl: payload.imageUrl,
+      deliverables: toArray(payload.deliverables),
+      status: payload.status ?? "published"
+    };
+  }
+  if (resource === "videos") {
+    return {
+      ...payload,
+      thumbnail: mediaFrom(payload.thumbnailUrl ?? payload.imageUrl, payload.title),
+      isPublished: payload.isPublished ?? true
+    };
+  }
+  return payload;
+}
+
+function toApiSingletonPayload(resource: string, payload: Record<string, unknown>) {
+  if (resource !== "settings") return payload;
+  const phone = toArray(payload.phone);
+  return {
+    companyName: payload.siteName,
+    tagline: payload.tagline,
+    shortDescription: payload.footerDescription,
+    contact: {
+      address: payload.address,
+      phone1: phone[0] ?? "",
+      phone2: phone[1] ?? "",
+      email: payload.email,
+      whatsapp: payload.whatsapp
+    },
+    social: {
+      instagram: payload.instagramUrl,
+      facebook: payload.facebookUrl,
+      whatsapp: payload.whatsappUrl,
+      email: payload.emailUrl
+    },
+    footer: {
+      description: payload.footerDescription
+    }
+  };
+}

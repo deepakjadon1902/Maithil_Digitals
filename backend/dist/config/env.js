@@ -14,8 +14,10 @@ const envSchema = z.object({
     IMAGEKIT_URL_ENDPOINT: z.string().optional(),
     RESEND_API_KEY: z.string().optional(),
     RESEND_FROM_EMAIL: z.string().default("Maithil Digitals <onboarding@resend.dev>"),
-    CLIENT_URL: z.string().url().default("http://localhost:5173"),
-    ADMIN_URL: z.string().url().default("http://localhost:5173")
+    CLIENT_URL: z.string().url().default("https://maithil-digitals.vercel.app"),
+    ADMIN_URL: z.string().url().default("https://maithil-digitals.vercel.app"),
+    API_URL: z.string().url().default("https://maithil-digitals.onrender.com"),
+    ALLOWED_ORIGINS: z.string().optional().default("https://maithil-digitals.vercel.app")
 });
 export const env = envSchema.parse(process.env);
 export const isProduction = env.NODE_ENV === "production";

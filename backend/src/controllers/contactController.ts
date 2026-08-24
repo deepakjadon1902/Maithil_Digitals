@@ -11,14 +11,16 @@ import { AppError } from "../utils/AppError.js";
 export const createEnquiry = asyncHandler(async (req: Request, res: Response) => {
   const payload = enquirySchema.parse(req.body);
   const enquiry = await Enquiry.create(payload);
-  await sendEnquiryNotification(payload);
+  await sendEnquiryNotification(payload).catch((error) => {
+    console.error("Enquiry saved, but email notification failed:", error instanceof Error ? error.message : error);
+  });
   return successResponse(res, "Enquiry received", { id: enquiry.id }, 201);
 });
 
 export const listEnquiries = asyncHandler(async (req: Request, res: Response) => {
   const query = paginationSchema.parse(req.query);
   const filter = query.status ? { status: query.status } : {};
-  const data = await listDocuments(Enquiry, { ...query, filter, searchFields: ["name", "email", "phone", "company", "service"], sort: { createdAt: -1 } });
+  const data = await listDocuments(Enquiry, { ...query, filter, searchFields: ["name", "email", "phone", "company", "businessName", "businessType", "service", "servicesRequired"], sort: { createdAt: -1 } });
   return successResponse(res, "Enquiries loaded", data);
 });
 

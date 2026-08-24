@@ -10,6 +10,10 @@ export const serviceSchema = z.object({
   shortDescription: z.string().min(2).max(280),
   description: z.string().optional().default(""),
   category: z.string().optional().default("Digital Marketing"),
+  cta: z.string().optional().default(""),
+  includes: z.union([z.array(z.string()), z.string()]).optional().default([]),
+  imageUrl: z.string().url().optional().or(z.literal("")).default(""),
+  videoUrl: z.string().url().optional().or(z.literal("")).default(""),
   icon: z.string().optional().default(""),
   featuredImage: mediaSchema.optional(),
   gallery: z.array(mediaSchema).optional().default([]),
@@ -36,6 +40,7 @@ export const projectSchema = z.object({
   deliverables: z.array(z.string()).optional().default([]),
   results: z.array(z.object({ label: z.string(), value: z.string() })).optional().default([]),
   heroImage: mediaSchema.optional(),
+  imageUrl: z.string().url().optional().or(z.literal("")).default(""),
   gallery: z.array(mediaSchema).optional().default([]),
   videoUrl: z.string().url().optional().or(z.literal("")).default(""),
   relatedServices: z.array(z.string()).optional().default([]),
@@ -51,6 +56,7 @@ export const videoSchema = z.object({
   description: z.string().optional().default(""),
   category: z.string().optional().default(""),
   thumbnail: mediaSchema.optional(),
+  thumbnailUrl: z.string().url().optional().or(z.literal("")).default(""),
   videoUrl: z.string().url(),
   duration: z.string().optional().default(""),
   featured: z.boolean().optional(),
@@ -117,10 +123,13 @@ export const faqSchema = z.object({
 
 export const enquirySchema = z.object({
   name: z.string().min(2).max(120),
-  email: z.string().email(),
+  email: z.string().email().optional().or(z.literal("")).default(""),
   phone: z.string().min(7).max(20).regex(/^[0-9+\-\s()]+$/),
   company: z.string().max(120).optional().default(""),
+  businessName: z.string().max(120).optional().default(""),
+  businessType: z.string().max(120).optional().default(""),
   service: z.string().max(120).optional().default(""),
+  servicesRequired: z.string().max(160).optional().default(""),
   budget: z.string().max(80).optional().default(""),
   message: z.string().min(10).max(3000)
 });

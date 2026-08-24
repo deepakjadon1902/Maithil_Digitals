@@ -4,7 +4,7 @@ import { Footer } from "./components/Footer";
 import { Navbar } from "./components/Navbar";
 import { PageTransition } from "./components/PageTransition";
 import { LoadingState } from "./components/State";
-import { settings } from "./data/fallback";
+import { useContent } from "./hooks/useContent";
 
 const Home = lazy(() => import("./pages/Home").then((module) => ({ default: module.Home })));
 const About = lazy(() => import("./pages/About").then((module) => ({ default: module.About })));
@@ -12,6 +12,9 @@ const Services = lazy(() => import("./pages/Services").then((module) => ({ defau
 const ServiceDetail = lazy(() => import("./pages/ServiceDetail").then((module) => ({ default: module.ServiceDetail })));
 const Work = lazy(() => import("./pages/Work").then((module) => ({ default: module.Work })));
 const ProjectDetail = lazy(() => import("./pages/ProjectDetail").then((module) => ({ default: module.ProjectDetail })));
+const Packages = lazy(() => import("./pages/Packages").then((module) => ({ default: module.Packages })));
+const PackagePlanDetail = lazy(() => import("./pages/PackageDetail").then((module) => ({ default: module.PackagePlanDetail })));
+const PackageCategoryDetail = lazy(() => import("./pages/PackageDetail").then((module) => ({ default: module.PackageCategoryDetail })));
 const Videos = lazy(() => import("./pages/Videos").then((module) => ({ default: module.Videos })));
 const VideoDetail = lazy(() => import("./pages/VideoDetail").then((module) => ({ default: module.VideoDetail })));
 const Insights = lazy(() => import("./pages/Insights").then((module) => ({ default: module.Insights })));
@@ -25,6 +28,7 @@ const NotFound = lazy(() => import("./pages/NotFound").then((module) => ({ defau
 export default function App() {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith("/admin");
+  const { settings } = useContent();
 
   return (
     <>
@@ -38,6 +42,9 @@ export default function App() {
             <Route path="/services/:slug" element={<ServiceDetail />} />
             <Route path="/work" element={<Work />} />
             <Route path="/work/:slug" element={<ProjectDetail />} />
+            <Route path="/packages" element={<Packages />} />
+            <Route path="/packages/plan/:slug" element={<PackagePlanDetail />} />
+            <Route path="/packages/category/:slug" element={<PackageCategoryDetail />} />
             <Route path="/videos" element={<Videos />} />
             <Route path="/videos/:slug" element={<VideoDetail />} />
             <Route path="/insights" element={<Insights />} />

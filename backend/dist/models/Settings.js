@@ -10,11 +10,14 @@ const settingsSchema = new Schema({
         address: { type: String, default: "Kosi Kalan, Mathura, Uttar Pradesh, India" },
         phone1: { type: String, default: "9917006983" },
         phone2: { type: String, default: "9625643209" },
-        email: { type: String, default: "maithildigitals@gmail.com" }
+        email: { type: String, default: "maithildigitals@gmail.com" },
+        whatsapp: { type: String, default: "9917006983" }
     },
     social: {
         instagram: { type: String, default: "" },
         facebook: { type: String, default: "" },
+        whatsapp: { type: String, default: "" },
+        email: { type: String, default: "" },
         linkedin: { type: String, default: "" },
         youtube: { type: String, default: "" },
         twitter: { type: String, default: "" }

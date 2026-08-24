@@ -13,8 +13,10 @@ export type Media = {
 
 export type SiteSettings = {
   siteName: string;
+  tagline?: string;
   logo: Media;
   phone: string[];
+  whatsapp?: string;
   email: string;
   address: string;
   socials: { label: string; url: string }[];
@@ -28,7 +30,10 @@ export type Service = {
   title: string;
   description: string;
   tags: string[];
+  cta?: string;
+  includes?: string[];
   image: Media;
+  videoUrl?: string;
   overview: string;
   problems: string[];
   approach: string[];
@@ -111,7 +116,30 @@ export type ContactPayload = {
   email: string;
   phone: string;
   company?: string;
+  businessName?: string;
+  businessType?: string;
   service?: string;
+  servicesRequired?: string;
   budget?: string;
   message: string;
+};
+
+export type PackagePlan = {
+  name: string;
+  label: string;
+  description: string;
+  badge?: string;
+  cta: string;
+  features: string[];
+};
+
+export type PackageCategory = {
+  title: string;
+  description: string;
+  services: string[];
+};
+
+export type Industry = {
+  title: string;
+  description: string;
 };

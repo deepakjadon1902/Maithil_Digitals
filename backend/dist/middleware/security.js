@@ -14,7 +14,8 @@ export function applySecurity(app) {
     app.use(morgan(isProduction ? "combined" : "dev"));
     app.use(cors({
         origin(origin, callback) {
-            const allowed = new Set([env.CLIENT_URL, env.ADMIN_URL, "http://localhost:5173", "http://127.0.0.1:5173"]);
+            const extraOrigins = env.ALLOWED_ORIGINS.split(",").map((item) => item.trim()).filter(Boolean);
+            const allowed = new Set([env.CLIENT_URL, env.ADMIN_URL, "http://localhost:5173", "http://127.0.0.1:5173", ...extraOrigins]);
             if (!origin || allowed.has(origin))
                 return callback(null, true);
             callback(new Error("CORS origin not allowed"));

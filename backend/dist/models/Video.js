@@ -6,6 +6,7 @@ const videoSchema = new Schema({
     description: { type: String, default: "" },
     category: { type: String, default: "" },
     thumbnail: { type: mediaSchema, default: {} },
+    thumbnailUrl: { type: String, default: "" },
     videoUrl: { type: String, required: true },
     duration: { type: String, default: "" },
     featured: { type: Boolean, default: false, index: true },

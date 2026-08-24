@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "https://maithil-digitals.onrender.com/api";
 
 export type ApiState<T> = {
   data: T;
