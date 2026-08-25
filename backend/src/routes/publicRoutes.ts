@@ -4,6 +4,7 @@ import {
   getAbout,
   getHome,
   getInsight,
+  getPackages,
   getProject,
   getService,
   getSettings,
@@ -25,6 +26,7 @@ publicRoutes.get("/health", health);
 publicRoutes.get("/settings", getSettings);
 publicRoutes.get("/home", getHome);
 publicRoutes.get("/about", getAbout);
+publicRoutes.get("/packages", getPackages);
 publicRoutes.get("/services", listServices);
 publicRoutes.get("/services/:slug", getService);
 publicRoutes.get("/projects", listProjects);

@@ -189,12 +189,14 @@ function Dashboard({ onOpen }: { onOpen: (key: string) => void }) {
     { key: "totalServices", label: "Services", open: "services", icon: Search },
     { key: "totalProjects", label: "Projects", open: "projects", icon: BarChart3 },
     { key: "totalVideos", label: "Videos", open: "videos", icon: FileText },
-    { key: "totalEnquiries", label: "Enquiries", open: "enquiries", icon: Mail }
+    { key: "totalEnquiries", label: "Enquiries", open: "enquiries", icon: Mail },
+    { key: "totalInsights", label: "Insights", open: "insights", icon: FileText },
+    { key: "totalTestimonials", label: "Testimonials", open: "testimonials", icon: CheckCircle2 }
   ];
   return (
     <div>
       <PageIntro eyebrow="Dashboard" title="Website command center" description="Jump into the content areas that affect the public site, review enquiry volume, and keep your important website data tidy." />
-      <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {cards.map((card) => (
           <button key={card.key} onClick={() => onOpen(card.open)} className="group rounded-premium border border-white/10 bg-[#0d0e1c] p-5 text-left transition hover:-translate-y-0.5 hover:border-orange">
             <span className="grid size-10 place-items-center rounded-premium bg-white/[0.06] text-orange"><card.icon size={18} /></span>
@@ -327,7 +329,7 @@ function PackageSettings() {
   const removeCategory = (index: number) => setCategories((current) => current.filter((_, itemIndex) => itemIndex !== index));
 
   async function save() {
-    await adminApi.updateSingleton("packages", { items });
+    await adminApi.updateSingleton("packages", { items, categories });
     await adminApi.updateSingleton("packageCategories", { items: categories });
     setMessage("Saved. Package plans and categories update on the Home and Packages pages.");
   }
@@ -460,7 +462,7 @@ function ContentManager({ config }: { config: ContentConfig }) {
 function EditorCard({ config, value, onChange, onSave, message }: { config: ContentConfig; value: Record<string, unknown>; onChange: (value: Record<string, unknown>) => void; onSave: () => void; message: string }) {
   return (
     <Panel title={value._id ? "Edit record" : "Create record"} description="Fill the important fields first. Optional fields can be improved later." sticky>
-      {config.resource === "services" || config.resource === "projects" ? <InlineMediaControls resource={config.resource} value={value} onChange={onChange} /> : null}
+      {["services", "projects", "insights", "testimonials", "team"].includes(config.resource) ? <InlineMediaControls resource={config.resource} value={value} onChange={onChange} /> : null}
       <div className="grid gap-4">
         {config.fields.map((field) => (
           <Field key={field.key} label={field.label} type={field.type} textarea={field.type === "textarea"} value={String(value[field.key] ?? "")} placeholder={field.placeholder} onChange={(text) => onChange({ ...value, [field.key]: text })} />
@@ -876,6 +878,10 @@ const contentConfigs: Record<string, ContentConfig> = {
       { key: "imageUrl", label: "Image URL", type: "url", placeholder: "https://..." },
       { key: "videoUrl", label: "Video URL", type: "url", placeholder: "YouTube, social or embed URL" },
       { key: "overview", label: "Overview", type: "textarea", placeholder: "Explain what this service does." },
+      { key: "problems", label: "Problems solved", type: "textarea", placeholder: "Irregular posting, Weak social identity, Low engagement" },
+      { key: "approach", label: "Approach", type: "textarea", placeholder: "Understand your business, Plan monthly content, Publish and review" },
+      { key: "capabilities", label: "Capabilities", type: "textarea", placeholder: "Content planning, Account management, Captions, Scheduling" },
+      { key: "faq", label: "Service FAQ", type: "textarea", placeholder: "Question one?|Answer one.\nQuestion two?|Answer two." },
       { key: "description", label: "Detailed description", type: "textarea", placeholder: "Longer service details." }
     ]
   },
@@ -920,6 +926,92 @@ const contentConfigs: Record<string, ContentConfig> = {
       { key: "publishDate", label: "Publish date", type: "date" },
       { key: "description", label: "Description", type: "textarea" }
     ]
+  },
+  insights: {
+    resource: "insights",
+    title: "Insights",
+    eyebrow: "Articles",
+    description: "Publish insight articles that appear on the public Insights page and detail pages.",
+    emptyText: "No insights added",
+    primaryLabel: "New insight",
+    summary: ["slug", "category", "status"],
+    fields: [
+      { key: "title", label: "Insight title", placeholder: "How local brands can grow online" },
+      { key: "slug", label: "URL slug", placeholder: "local-brands-grow-online" },
+      { key: "excerpt", label: "Excerpt", type: "textarea", placeholder: "Short preview shown on cards." },
+      { key: "content", label: "Article body", type: "textarea", placeholder: "Write paragraphs on separate lines." },
+      { key: "category", label: "Category", placeholder: "Digital Marketing" },
+      { key: "author", label: "Author", placeholder: "Maithil Digitals" },
+      { key: "readTime", label: "Read time", placeholder: "4 min read" },
+      { key: "publishDate", label: "Publish date", type: "date" },
+      { key: "imageUrl", label: "Featured image URL", type: "url", placeholder: "https://..." },
+      { key: "tags", label: "Tags", placeholder: "SEO, Branding, Social Media" },
+      { key: "status", label: "Status", placeholder: "published" }
+    ]
+  },
+  faqs: {
+    resource: "faqs",
+    title: "FAQs",
+    eyebrow: "Questions",
+    description: "Manage the questions shown on the public homepage FAQ section.",
+    emptyText: "No FAQs added",
+    primaryLabel: "New FAQ",
+    summary: ["category", "sortOrder"],
+    fields: [
+      { key: "question", label: "Question", placeholder: "Do you create reels?" },
+      { key: "answer", label: "Answer", type: "textarea", placeholder: "Yes. We plan, shoot and edit short-form video content." },
+      { key: "category", label: "Category", placeholder: "General" },
+      { key: "sortOrder", label: "Sort order", placeholder: "1" }
+    ]
+  },
+  statistics: {
+    resource: "statistics",
+    title: "Statistics",
+    eyebrow: "About Page",
+    description: "Control the statistic cards rendered on the public About page.",
+    emptyText: "No statistics added",
+    primaryLabel: "New stat",
+    summary: ["value", "sortOrder"],
+    fields: [
+      { key: "label", label: "Label", placeholder: "Business categories" },
+      { key: "value", label: "Value", placeholder: "8+" },
+      { key: "description", label: "Description", type: "textarea", placeholder: "Optional internal/context text." },
+      { key: "sortOrder", label: "Sort order", placeholder: "1" }
+    ]
+  },
+  testimonials: {
+    resource: "testimonials",
+    title: "Testimonials",
+    eyebrow: "Social Proof",
+    description: "Manage client testimonials for reusable public sections.",
+    emptyText: "No testimonials added",
+    primaryLabel: "New testimonial",
+    summary: ["company", "designation", "rating"],
+    fields: [
+      { key: "clientName", label: "Client name", placeholder: "Client Name" },
+      { key: "designation", label: "Designation", placeholder: "Founder" },
+      { key: "company", label: "Company", placeholder: "Client Company" },
+      { key: "testimonial", label: "Testimonial", type: "textarea", placeholder: "Write the client's feedback." },
+      { key: "imageUrl", label: "Client photo URL", type: "url", placeholder: "https://..." },
+      { key: "rating", label: "Rating", placeholder: "5" }
+    ]
+  },
+  team: {
+    resource: "team",
+    title: "Team",
+    eyebrow: "About Page",
+    description: "Manage active team profiles for public team sections.",
+    emptyText: "No team members added",
+    primaryLabel: "New member",
+    summary: ["designation", "linkedin"],
+    fields: [
+      { key: "name", label: "Name", placeholder: "Team member name" },
+      { key: "designation", label: "Role", placeholder: "Creative Strategist" },
+      { key: "bio", label: "Bio", type: "textarea", placeholder: "Short profile or role summary." },
+      { key: "imageUrl", label: "Photo URL", type: "url", placeholder: "https://..." },
+      { key: "linkedin", label: "LinkedIn URL", type: "url", placeholder: "https://..." },
+      { key: "instagram", label: "Instagram URL", type: "url", placeholder: "https://..." }
+    ]
   }
 };
 
@@ -930,6 +1022,11 @@ const adminNav = [
   { key: "projects", label: "Projects / Work", icon: BarChart3 },
   { key: "packages", label: "Packages", icon: FileText },
   { key: "videos", label: "Videos", icon: FileText },
+  { key: "insights", label: "Insights", icon: FileText },
+  { key: "faqs", label: "FAQs", icon: CheckCircle2 },
+  { key: "statistics", label: "Statistics", icon: BarChart3 },
+  { key: "testimonials", label: "Testimonials", icon: CheckCircle2 },
+  { key: "team", label: "Team", icon: LayoutDashboard },
   { key: "enquiries", label: "Contacts / Enquiries", icon: Mail },
   { key: "seo", label: "SEO Settings", icon: Search },
   { key: "media", label: "Media", icon: ImageUp }

@@ -24,6 +24,8 @@ export type SiteSettings = {
   seo: SEO;
 };
 
+export type SeoMap = Record<string, SEO>;
+
 export type Service = {
   slug: string;
   number: string;

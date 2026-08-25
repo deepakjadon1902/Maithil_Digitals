@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { dashboard, upsertAbout, upsertHome, upsertSeo, upsertSettings } from "../controllers/adminController.js";
+import { dashboard, upsertAbout, upsertHome, upsertPackages, upsertSeo, upsertSettings } from "../controllers/adminController.js";
 import { createCrudController } from "../controllers/adminCrudController.js";
 import { deleteEnquiry, listEnquiries, updateEnquiryStatus } from "../controllers/contactController.js";
 import { deleteMedia, uploadMedia, uploadVideoMedia } from "../controllers/mediaController.js";
@@ -22,6 +22,7 @@ adminRoutes.get("/dashboard", dashboard);
 adminRoutes.put("/settings", upsertSettings);
 adminRoutes.put("/home", upsertHome);
 adminRoutes.put("/about", upsertAbout);
+adminRoutes.put("/packages", upsertPackages);
 adminRoutes.put("/seo", upsertSeo);
 adminRoutes.post("/media/images", uploadImage.single("image"), uploadMedia);
 adminRoutes.post("/media/videos", uploadVideo.single("video"), uploadVideoMedia);

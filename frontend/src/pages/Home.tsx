@@ -5,7 +5,7 @@ import { ProjectGrid } from "../components/ProjectGrid";
 import { SectionHeading } from "../components/SectionHeading";
 import { SEO } from "../components/SEO";
 import { ServiceCard } from "../components/ServiceCard";
-import { contentProductionImages, faqs, industries } from "../data/fallback";
+import { contentProductionImages, industries } from "../data/fallback";
 import { pageSeo, useContent } from "../hooks/useContent";
 import { faqSchema, organizationSchema } from "../lib/schema";
 
@@ -25,12 +25,12 @@ const process = [
 ];
 
 export function Home() {
-  const { packages, projects, services, settings } = useContent();
+  const { faqs, packages, projects, seo, services, settings } = useContent();
   const featuredServices = services.slice(0, 6);
 
   return (
     <>
-      <SEO seo={pageSeo("home", settings.seo)} schema={[organizationSchema(settings), faqSchema(faqs)]} />
+      <SEO seo={seo.home ?? pageSeo("home", settings.seo)} schema={[organizationSchema(settings), faqSchema(faqs)]} />
       <Hero />
 
       <section className="bg-[#F5F8FC] px-4 py-16 text-navy sm:px-6 lg:px-8">

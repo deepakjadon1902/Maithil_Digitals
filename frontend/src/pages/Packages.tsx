@@ -1,15 +1,15 @@
 import { Link } from "react-router-dom";
 import { Button } from "../components/Button";
 import { SEO } from "../components/SEO";
-import { useContent } from "../hooks/useContent";
+import { pageSeo, useContent } from "../hooks/useContent";
 
 const slugify = (value: string) => value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
 export function Packages() {
-  const { packageCategories, packages } = useContent();
+  const { packageCategories, packages, seo } = useContent();
   return (
     <>
-      <SEO seo={{ title: "Packages | Maithil Digitals", description: "Digital marketing and content packages for restaurants, schools, real estate, salons, hotels, fashion, jewellery and local businesses." }} />
+      <SEO seo={seo.packages ?? pageSeo("packages", { title: "Packages | Maithil Digitals", description: "Digital marketing and content packages for restaurants, schools, real estate, salons, hotels, fashion, jewellery and local businesses." })} />
       <section className="bg-white px-4 pb-16 pt-36 text-navy sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <p className="text-xs font-black uppercase tracking-[0.22em] text-orange">Packages</p>

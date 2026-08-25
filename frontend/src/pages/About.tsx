@@ -1,17 +1,18 @@
 import { Button } from "../components/Button";
 import { SectionHeading } from "../components/SectionHeading";
 import { SEO } from "../components/SEO";
-import { stats } from "../data/fallback";
+import { TeamCard } from "../components/TeamCard";
+import { TestimonialCard } from "../components/TestimonialCard";
 import { pageSeo, useContent } from "../hooks/useContent";
 
 const approach = ["Understand the business.", "Understand the audience.", "Create meaningful content.", "Build a stronger digital presence."];
 const pillars = ["Strategy", "Creativity", "Content", "Growth"];
 
 export function About() {
-  const { settings } = useContent();
+  const { seo, settings, stats, team, testimonials } = useContent();
   return (
     <>
-      <SEO seo={pageSeo("about", { title: "About Us | Maithil Digitals", description: "Maithil Digitals helps businesses look better online with strategy, content, creativity and growth." })} />
+      <SEO seo={seo.about ?? pageSeo("about", { title: "About Us | Maithil Digitals", description: "Maithil Digitals helps businesses look better online with strategy, content, creativity and growth." })} />
       <section className="bg-white px-4 pb-14 pt-36 text-navy sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1fr_.8fr] lg:items-end">
           <SectionHeading eyebrow="About Us" title="We help businesses look better online." description="Maithil Digitals is a digital marketing and creative content agency focused on helping businesses build a strong and consistent digital presence." />
@@ -45,6 +46,26 @@ export function About() {
           {stats.map((stat) => <div key={stat.label} className="rounded-premium border border-navy/10 bg-white p-6 shadow-sm"><p className="text-4xl font-black text-orange">{stat.value}</p><p className="mt-2 font-black text-navy">{stat.label}</p></div>)}
         </div>
       </section>
+      {team.length ? (
+        <section className="bg-white px-4 py-16 text-navy sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <SectionHeading eyebrow="Team" title="People behind the work." />
+            <div className="mt-10 grid auto-rows-fr gap-5 md:grid-cols-2 lg:grid-cols-3">
+              {team.map((member) => <TeamCard key={member.name} member={member} />)}
+            </div>
+          </div>
+        </section>
+      ) : null}
+      {testimonials.length ? (
+        <section className="bg-[#F5F8FC] px-4 py-16 text-navy sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <SectionHeading eyebrow="Testimonials" title="What clients say." />
+            <div className="mt-10 grid auto-rows-fr gap-5 md:grid-cols-2 lg:grid-cols-3">
+              {testimonials.map((testimonial) => <TestimonialCard key={`${testimonial.name}-${testimonial.company}`} testimonial={testimonial} />)}
+            </div>
+          </div>
+        </section>
+      ) : null}
       <section className="bg-navy px-4 py-16 text-white sm:px-6 lg:px-8">
         <div className="mx-auto flex max-w-7xl flex-col justify-between gap-8 md:flex-row md:items-center">
           <SectionHeading title="Ready to build a stronger presence?" description="Let's turn your business into a brand people notice, remember and choose." />

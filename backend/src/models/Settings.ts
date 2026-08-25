@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { mediaSchema, seoSchema } from "./shared.js";
+import { mediaSchema } from "./shared.js";
 
 const settingsSchema = new Schema(
   {
@@ -28,7 +28,7 @@ const settingsSchema = new Schema(
       primaryColor: { type: String, default: "#1F2040" },
       accentColor: { type: String, default: "#F06A00" }
     },
-    seo: { type: seoSchema, default: {} },
+    seo: { type: Schema.Types.Mixed, default: {} },
     footer: {
       description: { type: String, default: "Premium digital marketing, brand, content and web experiences for businesses ready to grow with clarity." },
       copyrightText: { type: String, default: "Maithil Digitals. All rights reserved." },

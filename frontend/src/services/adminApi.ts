@@ -299,6 +299,15 @@ function toArray(value: unknown) {
   return [];
 }
 
+function toFaqItems(value: unknown) {
+  if (Array.isArray(value)) return value;
+  if (typeof value !== "string") return [];
+  return value.split(/\n+/).map((line) => {
+    const [question, ...answerParts] = line.split("|");
+    return { question: question?.trim(), answer: answerParts.join("|").trim() };
+  }).filter((item) => item.question && item.answer);
+}
+
 function toApiPayload(resource: string, payload: Record<string, unknown>) {
   if (resource === "services") {
     return {
@@ -306,6 +315,10 @@ function toApiPayload(resource: string, payload: Record<string, unknown>) {
       featuredImage: mediaFrom(payload.imageUrl, payload.title),
       includes: toArray(payload.includes),
       features: toArray(payload.includes).length ? toArray(payload.includes) : toArray(payload.tags),
+      problems: toArray(payload.problems),
+      approach: toArray(payload.approach),
+      capabilities: toArray(payload.capabilities),
+      faq: toFaqItems(payload.faq),
       isActive: payload.isActive ?? true
     };
   }
@@ -325,10 +338,55 @@ function toApiPayload(resource: string, payload: Record<string, unknown>) {
       isPublished: payload.isPublished ?? true
     };
   }
+  if (resource === "insights") {
+    return {
+      ...payload,
+      featuredImage: mediaFrom(payload.imageUrl, payload.title),
+      tags: toArray(payload.tags),
+      status: payload.status ?? "published"
+    };
+  }
+  if (resource === "testimonials") {
+    return {
+      ...payload,
+      photo: mediaFrom(payload.imageUrl, payload.clientName ?? payload.name),
+      rating: Number(payload.rating || 5),
+      isPublished: payload.isPublished ?? true
+    };
+  }
+  if (resource === "team") {
+    return {
+      ...payload,
+      photo: mediaFrom(payload.imageUrl, payload.name),
+      isActive: payload.isActive ?? true
+    };
+  }
+  if (resource === "statistics") {
+    return {
+      ...payload,
+      sortOrder: Number(payload.sortOrder || 0),
+      isActive: payload.isActive ?? true
+    };
+  }
+  if (resource === "faqs") {
+    return {
+      ...payload,
+      sortOrder: Number(payload.sortOrder || 0),
+      isPublished: payload.isPublished ?? true
+    };
+  }
   return payload;
 }
 
 function toApiSingletonPayload(resource: string, payload: Record<string, unknown>) {
+  if (resource === "packages") {
+    const items = Array.isArray(payload.items) ? payload.items as Record<string, unknown>[] : [];
+    const categories = Array.isArray(payload.categories) ? payload.categories as Record<string, unknown>[] : [];
+    return {
+      items: items.map((item) => ({ ...item, features: toArray(item.features) })),
+      categories: categories.map((category) => ({ ...category, services: toArray(category.services) }))
+    };
+  }
   if (resource !== "settings") return payload;
   const phone = toArray(payload.phone);
   return {

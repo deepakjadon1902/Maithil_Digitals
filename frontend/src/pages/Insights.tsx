@@ -2,12 +2,13 @@ import { Link } from "react-router-dom";
 import { MediaFrame } from "../components/MediaFrame";
 import { SectionHeading } from "../components/SectionHeading";
 import { SEO } from "../components/SEO";
-import { insights } from "../data/fallback";
+import { useContent } from "../hooks/useContent";
 
 export function Insights() {
+  const { insights, seo } = useContent();
   return (
     <>
-      <SEO seo={{ title: "Insights | Maithil Digitals", description: "Read digital marketing, content, branding and growth thinking from Maithil Digitals." }} />
+      <SEO seo={seo.insights ?? { title: "Insights | Maithil Digitals", description: "Read digital marketing, content, branding and growth thinking from Maithil Digitals." }} />
       <section className="bg-white px-4 pb-14 pt-36 text-navy sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <SectionHeading eyebrow="Insights" title="Practical thinking for digital growth." description="Optional articles can be added here later when the content plan is ready." />

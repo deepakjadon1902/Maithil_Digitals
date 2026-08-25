@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { packageCategories, packages, projects, services, settings, videos } from "../data/fallback";
-import type { PackageCategory, PackagePlan, Project, SEO, Service, SiteSettings, VideoItem } from "../types/content";
+import { faqs, insights, packageCategories, packages, projects, services, settings, stats, team, testimonials, videos } from "../data/fallback";
+import type { FAQ, Insight, PackageCategory, PackagePlan, Project, SEO, SeoMap, Service, SiteSettings, Stat, TeamMember, Testimonial, VideoItem } from "../types/content";
 
 const STORE_PREFIX = "md_demo_admin_";
 const CONTENT_EVENT = "md-content-updated";
@@ -18,7 +18,7 @@ function readStored<T>(key: string, fallback: T): T {
 }
 
 function image(src?: unknown, alt?: unknown) {
-  if (src && typeof src === "object" && "src" in src) {
+  if (src && typeof src === "object" && ("src" in src || "url" in src)) {
     const media = src as { src?: unknown; alt?: unknown; url?: unknown };
     return image(media.src ?? media.url, media.alt ?? alt);
   }
@@ -67,6 +67,7 @@ function normalizeService(record: Record<string, unknown>, index: number): Servi
     problems: list(record.problems).length ? list(record.problems) : fallback.problems,
     approach: list(record.approach).length ? list(record.approach) : fallback.approach,
     capabilities: list(record.capabilities).length ? list(record.capabilities) : fallback.capabilities,
+    faq: Array.isArray(record.faq) && record.faq.length ? (record.faq as Record<string, unknown>[]).map((item, itemIndex) => normalizeFaq(item, itemIndex)) : fallback.faq,
     seo: seoFrom(record, fallback.seo)
   };
 }
@@ -108,6 +109,70 @@ function normalizeVideo(record: Record<string, unknown>, index: number): VideoIt
     duration: text(record.duration, fallback.duration ?? ""),
     publishDate: text(record.publishDate, fallback.publishDate),
     videoUrl: text(record.videoUrl, fallback.videoUrl),
+    seo: seoFrom(record, fallback.seo)
+  };
+}
+
+function normalizeFaq(record: Record<string, unknown>, index: number): FAQ {
+  const fallback = faqs[index] ?? faqs[0];
+  return {
+    question: text(record.question, fallback.question),
+    answer: text(record.answer, fallback.answer)
+  };
+}
+
+function normalizeStat(record: Record<string, unknown>, index: number): Stat {
+  const fallback = stats[index] ?? stats[0];
+  return {
+    value: text(record.value, fallback.value),
+    label: text(record.label, fallback.label)
+  };
+}
+
+function normalizeTestimonial(record: Record<string, unknown>, index: number): Testimonial {
+  const fallback = testimonials[index] ?? {
+    name: "Client",
+    designation: "Business Owner",
+    company: "Maithil Digitals client",
+    testimonial: "",
+    photo: image("", "Client photo")
+  };
+  const name = text(record.clientName ?? record.name, fallback.name);
+  return {
+    name,
+    designation: text(record.designation, fallback.designation),
+    company: text(record.company, fallback.company),
+    testimonial: text(record.testimonial, fallback.testimonial),
+    rating: Number(record.rating ?? fallback.rating ?? 5),
+    photo: image(record.photo, `${name} photo`)
+  };
+}
+
+function normalizeTeamMember(record: Record<string, unknown>, index: number): TeamMember {
+  const fallback = team[index] ?? team[0];
+  const name = text(record.name, fallback.name);
+  return {
+    name,
+    role: text(record.role ?? record.designation ?? record.bio, fallback.role),
+    photo: image(record.photo, `${name} photo`)
+  };
+}
+
+function normalizeInsight(record: Record<string, unknown>, index: number): Insight {
+  const fallback = insights[index] ?? insights[0];
+  const title = text(record.title, fallback.title);
+  const content = text(record.content ?? record.body, fallback.body.join("\n\n"));
+  return {
+    ...fallback,
+    title,
+    slug: text(record.slug, title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")),
+    category: text(record.category, fallback.category),
+    excerpt: text(record.excerpt, fallback.excerpt),
+    author: text(record.author, fallback.author),
+    publishDate: text(record.publishDate, fallback.publishDate).slice(0, 10),
+    readTime: text(record.readTime, fallback.readTime),
+    image: image(record.featuredImage ?? record.imageUrl, `${title} visual`),
+    body: content.split(/\n{2,}|\r?\n/).map((paragraph) => paragraph.trim()).filter(Boolean),
     seo: seoFrom(record, fallback.seo)
   };
 }
@@ -156,6 +221,12 @@ function readSeoMap() {
   return readStored<Record<string, SEO>>("seo", {});
 }
 
+function seoMapFrom(value?: Record<string, unknown>): SeoMap {
+  const remoteSeo = value?.seo;
+  if (remoteSeo && typeof remoteSeo === "object") return remoteSeo as SeoMap;
+  return readSeoMap();
+}
+
 export function pageSeo(key: string, fallback: SEO) {
   return readSeoMap()[key] ?? fallback;
 }
@@ -185,6 +256,13 @@ export function useContent() {
     services?: Record<string, unknown>[];
     projects?: Record<string, unknown>[];
     videos?: Record<string, unknown>[];
+    packages?: Record<string, unknown>[];
+    packageCategories?: Record<string, unknown>[];
+    faqs?: Record<string, unknown>[];
+    stats?: Record<string, unknown>[];
+    testimonials?: Record<string, unknown>[];
+    team?: Record<string, unknown>[];
+    insights?: Record<string, unknown>[];
   }>({});
 
   useEffect(() => {
@@ -203,14 +281,28 @@ export function useContent() {
       fetchApi<Record<string, unknown> | null>("/settings", null),
       fetchApi<unknown>("/services?limit=100", null),
       fetchApi<unknown>("/projects?limit=100", null),
-      fetchApi<unknown>("/videos?limit=100", null)
-    ]).then(([remoteSettings, remoteServices, remoteProjects, remoteVideos]) => {
+      fetchApi<unknown>("/videos?limit=100", null),
+      fetchApi<unknown>("/packages", null),
+      fetchApi<unknown>("/faqs", null),
+      fetchApi<unknown>("/statistics", null),
+      fetchApi<unknown>("/testimonials", null),
+      fetchApi<unknown>("/team", null),
+      fetchApi<unknown>("/insights?limit=100", null)
+    ]).then(([remoteSettings, remoteServices, remoteProjects, remoteVideos, remotePackages, remoteFaqs, remoteStats, remoteTestimonials, remoteTeam, remoteInsights]) => {
       if (!active) return;
+      const packageConfig = remotePackages && typeof remotePackages === "object" ? remotePackages as { items?: Record<string, unknown>[]; categories?: Record<string, unknown>[] } : {};
       setRemote({
         settings: remoteSettings ?? undefined,
         services: itemsFrom(remoteServices),
         projects: itemsFrom(remoteProjects),
-        videos: itemsFrom(remoteVideos)
+        videos: itemsFrom(remoteVideos),
+        packages: packageConfig.items ?? itemsFrom(remotePackages),
+        packageCategories: packageConfig.categories ?? [],
+        faqs: itemsFrom(remoteFaqs),
+        stats: itemsFrom(remoteStats),
+        testimonials: itemsFrom(remoteTestimonials),
+        team: itemsFrom(remoteTeam),
+        insights: itemsFrom(remoteInsights)
       });
     });
     return () => { active = false; };
@@ -220,12 +312,23 @@ export function useContent() {
     const storedServices = readStored<Record<string, unknown>[]>("services", []);
     const storedProjects = readStored<Record<string, unknown>[]>("projects", []);
     const storedVideos = readStored<Record<string, unknown>[]>("videos", []);
+    const storedFaqs = readStored<Record<string, unknown>[]>("faqs", []);
+    const storedStats = readStored<Record<string, unknown>[]>("statistics", []);
+    const storedTestimonials = readStored<Record<string, unknown>[]>("testimonials", []);
+    const storedTeam = readStored<Record<string, unknown>[]>("team", []);
+    const storedInsights = readStored<Record<string, unknown>[]>("insights", []);
     const storedPackages = readStored<{ items?: Record<string, unknown>[] }>("packages", {});
     const storedPackageCategories = readStored<{ items?: Record<string, unknown>[] }>("packageCategories", {});
     const serviceRecords = storedServices.length ? storedServices : remote.services?.length ? remote.services : [];
     const projectRecords = storedProjects.length ? storedProjects : remote.projects?.length ? remote.projects : [];
     const videoRecords = storedVideos.length ? storedVideos : remote.videos?.length ? remote.videos : [];
-    const packageRecords = storedPackages.items?.length ? storedPackages.items : [];
+    const faqRecords = storedFaqs.length ? storedFaqs : remote.faqs?.length ? remote.faqs : [];
+    const statRecords = storedStats.length ? storedStats : remote.stats?.length ? remote.stats : [];
+    const testimonialRecords = storedTestimonials.length ? storedTestimonials : remote.testimonials?.length ? remote.testimonials : [];
+    const teamRecords = storedTeam.length ? storedTeam : remote.team?.length ? remote.team : [];
+    const insightRecords = storedInsights.length ? storedInsights : remote.insights?.length ? remote.insights : [];
+    const packageRecords = storedPackages.items?.length ? storedPackages.items : remote.packages?.length ? remote.packages : [];
+    const categoryRecords = storedPackageCategories.items?.length ? storedPackageCategories.items : remote.packageCategories?.length ? remote.packageCategories : [];
 
     return {
       settings: remote.settings ? readSettingsFrom(remote.settings) : readSettings(),
@@ -233,8 +336,13 @@ export function useContent() {
       projects: projectRecords.length ? projectRecords.map(normalizeProject) : projects,
       videos: videoRecords.length ? videoRecords.map(normalizeVideo) : videos,
       packages: packageRecords.length ? packageRecords.map(normalizePackage) : packages,
-      packageCategories: storedPackageCategories.items?.length ? storedPackageCategories.items.map(normalizePackageCategory) : packageCategories,
-      seo: readSeoMap()
+      packageCategories: categoryRecords.length ? categoryRecords.map(normalizePackageCategory) : packageCategories,
+      faqs: faqRecords.length ? faqRecords.map(normalizeFaq) : faqs,
+      stats: statRecords.length ? statRecords.map(normalizeStat) : stats,
+      testimonials: testimonialRecords.length ? testimonialRecords.map(normalizeTestimonial).filter((item) => item.testimonial) : testimonials,
+      team: teamRecords.length ? teamRecords.map(normalizeTeamMember) : team,
+      insights: insightRecords.length ? insightRecords.map(normalizeInsight) : insights,
+      seo: seoMapFrom(remote.settings)
     };
   }, [remote, version]);
 }

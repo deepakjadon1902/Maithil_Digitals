@@ -3,11 +3,12 @@ import { Button } from "../components/Button";
 import { Image } from "../components/Image";
 import { SectionHeading } from "../components/SectionHeading";
 import { SEO } from "../components/SEO";
-import { insights } from "../data/fallback";
+import { useContent } from "../hooks/useContent";
 import { articleSchema } from "../lib/schema";
 
 export function InsightDetail() {
   const { slug = "" } = useParams();
+  const { insights } = useContent();
   const insight = insights.find((item) => item.slug === slug);
   if (!insight) return <section className="bg-white px-4 py-40 text-center text-navy"><h1 className="text-4xl font-black">Insight not found</h1><Button className="mt-8" href="/insights">Back to insights</Button></section>;
 

@@ -2,6 +2,7 @@ import { AboutPage } from "../models/AboutPage.js";
 import { FAQ } from "../models/FAQ.js";
 import { HomePage } from "../models/HomePage.js";
 import { Insight } from "../models/Insight.js";
+import { PackageConfig } from "../models/PackageConfig.js";
 import { Project } from "../models/Project.js";
 import { Service } from "../models/Service.js";
 import { Settings } from "../models/Settings.js";
@@ -27,6 +28,10 @@ export const getHome = asyncHandler(async (_req, res) => {
 export const getAbout = asyncHandler(async (_req, res) => {
     const about = await AboutPage.findOne().lean();
     return successResponse(res, "About content loaded", about);
+});
+export const getPackages = asyncHandler(async (_req, res) => {
+    const packages = await PackageConfig.findOne().lean();
+    return successResponse(res, "Packages loaded", packages);
 });
 export const listServices = asyncHandler(async (req, res) => {
     const query = paginationSchema.parse(req.query);

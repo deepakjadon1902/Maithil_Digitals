@@ -4,6 +4,7 @@ import { Enquiry } from "../models/Enquiry.js";
 import { FAQ } from "../models/FAQ.js";
 import { HomePage } from "../models/HomePage.js";
 import { Insight } from "../models/Insight.js";
+import { PackageConfig } from "../models/PackageConfig.js";
 import { Project } from "../models/Project.js";
 import { Service } from "../models/Service.js";
 import { Settings } from "../models/Settings.js";
@@ -41,6 +42,11 @@ export const upsertHome = asyncHandler(async (req: Request, res: Response) => {
 export const upsertAbout = asyncHandler(async (req: Request, res: Response) => {
   const about = await AboutPage.findOneAndUpdate({}, req.body, { new: true, upsert: true, runValidators: true });
   return successResponse(res, "About content saved", about);
+});
+
+export const upsertPackages = asyncHandler(async (req: Request, res: Response) => {
+  const packages = await PackageConfig.findOneAndUpdate({}, req.body, { new: true, upsert: true, runValidators: true });
+  return successResponse(res, "Packages saved", packages);
 });
 
 export const upsertSeo = asyncHandler(async (req: Request, res: Response) => {

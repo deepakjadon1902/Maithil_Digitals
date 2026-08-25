@@ -5,10 +5,10 @@ import { ServiceCard } from "../components/ServiceCard";
 import { pageSeo, useContent } from "../hooks/useContent";
 
 export function Services() {
-  const { services } = useContent();
+  const { seo, services } = useContent();
   return (
     <>
-      <SEO seo={pageSeo("services", { title: "Services | Maithil Digitals", description: "Social media management, reels, photography, creative design, branding and digital advertising by Maithil Digitals." })} />
+      <SEO seo={seo.services ?? pageSeo("services", { title: "Services | Maithil Digitals", description: "Social media management, reels, photography, creative design, branding and digital advertising by Maithil Digitals." })} />
       <section className="bg-white px-4 pb-14 pt-36 text-navy sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[.9fr_1.1fr] lg:items-end">
           <SectionHeading eyebrow="What We Do" title="Everything you need to build a stronger digital presence." description="Digital marketing, content creation, photography, reels, branding and advertising brought together in one practical workflow." />

@@ -7,7 +7,7 @@ import { pageSeo, useContent } from "../hooks/useContent";
 const categories = ["All", "Social Media", "Reels", "Photography", "Design", "Branding"];
 
 export function Work() {
-  const { projects } = useContent();
+  const { projects, seo } = useContent();
   const [active, setActive] = useState("All");
   const filtered = useMemo(() => {
     if (active === "All") return projects;
@@ -22,7 +22,7 @@ export function Work() {
 
   return (
     <>
-      <SEO seo={pageSeo("work", { title: "Our Work | Maithil Digitals", description: "A selection of content, campaigns, photography, reels and creative work by Maithil Digitals." })} />
+      <SEO seo={seo.work ?? pageSeo("work", { title: "Our Work | Maithil Digitals", description: "A selection of content, campaigns, photography, reels and creative work by Maithil Digitals." })} />
       <section className="bg-white px-4 pb-14 pt-36 text-navy sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <SectionHeading eyebrow="Our Work" title="Let the work speak." description="Filter projects by social media, reels, photography, design and branding. Admin-added work appears here automatically." />

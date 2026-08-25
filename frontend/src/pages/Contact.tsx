@@ -5,7 +5,7 @@ import { SEO } from "../components/SEO";
 import { pageSeo, useContent } from "../hooks/useContent";
 
 export function Contact() {
-  const { settings } = useContent();
+  const { seo, settings } = useContent();
   const whatsapp = settings.whatsapp ?? settings.phone[0];
   const instagram = settings.socials.find((social) => social.label.toLowerCase().includes("instagram"))?.url ?? "#";
   const contactLinks = [
@@ -17,7 +17,7 @@ export function Contact() {
 
   return (
     <>
-      <SEO seo={pageSeo("contact", { title: "Contact Maithil Digitals", description: "Send an enquiry to Maithil Digitals for social media, reels, photography, branding and digital marketing." })} />
+      <SEO seo={seo.contact ?? pageSeo("contact", { title: "Contact Maithil Digitals", description: "Send an enquiry to Maithil Digitals for social media, reels, photography, branding and digital marketing." })} />
       <section className="bg-white px-4 pb-14 pt-36 text-navy sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[.85fr_1.15fr]">
           <div>
