@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { faqs, insights, packageCategories, packages, projects, services, settings, stats, team, testimonials, videos } from "../data/fallback";
+import { faqs, insights, packageCategories, packages, settings, stats, team, testimonials, videos } from "../data/fallback";
 import type { FAQ, Insight, PackageCategory, PackagePlan, Project, SEO, SeoMap, Service, SiteSettings, Stat, TeamMember, Testimonial, VideoItem } from "../types/content";
 
 const STORE_PREFIX = "md_demo_admin_";
@@ -34,6 +34,13 @@ function list(value: unknown) {
   return [];
 }
 
+function mediaList(value: unknown, title: string) {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((item, index) => image(item, `${title} gallery ${index + 1}`))
+    .filter((item) => item.src);
+}
+
 function text(value: unknown, fallback = "") {
   return typeof value === "string" && value.trim() ? value : fallback;
 }
@@ -49,49 +56,47 @@ function seoFrom(record: Record<string, unknown>, fallback: SEO): SEO {
 }
 
 function normalizeService(record: Record<string, unknown>, index: number): Service {
-  const fallback = services[index] ?? services[0];
-  const title = text(record.title, fallback.title);
+  const title = text(record.title, `Service ${String(index + 1).padStart(2, "0")}`);
   const media = record.imageUrl ?? record.featuredImage;
   return {
-    ...fallback,
     number: text(record.number, String(index + 1).padStart(2, "0")),
     title,
     slug: text(record.slug, title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")),
-    description: text(record.shortDescription ?? record.description, fallback.description),
-    tags: list(record.tags).length ? list(record.tags) : list(record.features).length ? list(record.features) : fallback.tags,
-    cta: text(record.cta, fallback.cta ?? "Explore service"),
-    includes: list(record.includes).length ? list(record.includes) : list(record.features).length ? list(record.features) : fallback.includes,
-    image: media ? image(media, `${title} visual`) : fallback.image,
-    videoUrl: text(record.videoUrl, fallback.videoUrl ?? ""),
-    overview: text(record.overview ?? record.description, fallback.overview),
-    problems: list(record.problems).length ? list(record.problems) : fallback.problems,
-    approach: list(record.approach).length ? list(record.approach) : fallback.approach,
-    capabilities: list(record.capabilities).length ? list(record.capabilities) : fallback.capabilities,
-    faq: Array.isArray(record.faq) && record.faq.length ? (record.faq as Record<string, unknown>[]).map((item, itemIndex) => normalizeFaq(item, itemIndex)) : fallback.faq,
-    seo: seoFrom(record, fallback.seo)
+    description: text(record.shortDescription ?? record.description),
+    tags: list(record.tags).length ? list(record.tags) : list(record.features),
+    cta: text(record.cta, "Explore service"),
+    includes: list(record.includes).length ? list(record.includes) : list(record.features),
+    image: media ? image(media, `${title} visual`) : image("", `${title} visual`),
+    videoUrl: text(record.videoUrl),
+    overview: text(record.overview ?? record.description),
+    problems: list(record.problems),
+    approach: list(record.approach),
+    capabilities: list(record.capabilities),
+    faq: Array.isArray(record.faq) && record.faq.length ? (record.faq as Record<string, unknown>[]).map((item, itemIndex) => normalizeFaq(item, itemIndex)) : [],
+    seo: seoFrom(record, { title: `${title} | Maithil Digitals`, description: text(record.description ?? record.shortDescription, title) })
   };
 }
 
 function normalizeProject(record: Record<string, unknown>, index: number): Project {
-  const fallback = projects[index] ?? projects[0];
-  const title = text(record.title, fallback.title);
+  const title = text(record.title, `Project ${String(index + 1).padStart(2, "0")}`);
   const media = record.imageUrl ?? record.heroImage;
   return {
-    ...fallback,
     number: text(record.number, String(index + 1).padStart(2, "0")),
     title,
     slug: text(record.slug, title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")),
-    client: text(record.client, fallback.client),
-    category: text(record.category, fallback.category),
-    year: text(record.year, fallback.year),
-    image: media ? image(media, `${title} visual`) : fallback.image,
-    summary: text(record.shortDescription ?? record.summary, fallback.summary),
-    challenge: text(record.challenge, fallback.challenge),
-    strategy: text(record.strategy, fallback.strategy),
-    execution: text(record.execution, fallback.execution),
-    deliverables: list(record.deliverables).length ? list(record.deliverables) : fallback.deliverables,
-    videoUrl: text(record.videoUrl, fallback.videoUrl ?? ""),
-    seo: seoFrom(record, fallback.seo)
+    client: text(record.client),
+    category: text(record.category, "Work"),
+    year: text(record.year, new Date().getFullYear().toString()),
+    image: media ? image(media, `${title} visual`) : image("", `${title} visual`),
+    summary: text(record.shortDescription ?? record.summary ?? record.description),
+    result: text(record.result),
+    challenge: text(record.challenge),
+    strategy: text(record.strategy),
+    execution: text(record.execution),
+    deliverables: list(record.deliverables),
+    gallery: mediaList(record.gallery, title),
+    videoUrl: text(record.videoUrl),
+    seo: seoFrom(record, { title: `${title} | Maithil Digitals`, description: text(record.summary ?? record.shortDescription ?? record.description, title) })
   };
 }
 
@@ -332,8 +337,8 @@ export function useContent() {
 
     return {
       settings: remote.settings ? readSettingsFrom(remote.settings) : readSettings(),
-      services: serviceRecords.length ? serviceRecords.map(normalizeService) : services,
-      projects: projectRecords.length ? projectRecords.map(normalizeProject) : projects,
+      services: serviceRecords.map(normalizeService),
+      projects: projectRecords.map(normalizeProject),
       videos: videoRecords.length ? videoRecords.map(normalizeVideo) : videos,
       packages: packageRecords.length ? packageRecords.map(normalizePackage) : packages,
       packageCategories: categoryRecords.length ? categoryRecords.map(normalizePackageCategory) : packageCategories,

@@ -5,7 +5,6 @@ import type { SiteSettings } from "../types/content";
 import { Button } from "./Button";
 
 const nav = [
-  { label: "Home", href: "/" },
   { label: "Services", href: "/services" },
   { label: "Our Work", href: "/work" },
   { label: "Packages", href: "/packages" },
@@ -15,29 +14,64 @@ const nav = [
 
 export function Navbar({ settings }: { settings: SiteSettings }) {
   const [open, setOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [navOnDark, setNavOnDark] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 12);
-    onScroll();
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
+    let frame = 0;
+
+    const parseRgb = (value: string) => {
+      const match = value.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
+      if (!match || match[4] === "0") return null;
+      return [Number(match[1]), Number(match[2]), Number(match[3])] as const;
+    };
+
+    const readBackground = (element: Element | null) => {
+      let current = element;
+      while (current && current !== document.documentElement) {
+        const color = parseRgb(getComputedStyle(current).backgroundColor);
+        if (color) return color;
+        current = current.parentElement;
+      }
+      return parseRgb(getComputedStyle(document.body).backgroundColor) ?? [255, 255, 255];
+    };
+
+    const updateTheme = () => {
+      frame = 0;
+      const sampleX = Math.min(Math.max(window.innerWidth / 2, 24), window.innerWidth - 24);
+      const sampleY = Math.min(92, window.innerHeight - 1);
+      const [red, green, blue] = readBackground(document.elementFromPoint(sampleX, sampleY));
+      const luminance = red * 0.299 + green * 0.587 + blue * 0.114;
+      setNavOnDark(luminance < 142);
+    };
+
+    const scheduleUpdate = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(updateTheme);
+    };
+
+    scheduleUpdate();
+    window.addEventListener("scroll", scheduleUpdate, { passive: true });
+    window.addEventListener("resize", scheduleUpdate);
+    return () => {
+      if (frame) window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", scheduleUpdate);
+      window.removeEventListener("resize", scheduleUpdate);
+    };
   }, []);
 
-  const isDarkHeroRoute = location.pathname === "/";
-  const lightNav = open || scrolled || !isDarkHeroRoute;
+  const lightNav = open || !navOnDark;
 
   return (
-    <header className={`fixed inset-x-0 top-0 z-40 border-b backdrop-blur-xl transition ${lightNav ? "border-black/10 bg-white/94 shadow-sm" : "border-white/10 bg-ink/18"}`}>
+    <header className={`fixed inset-x-0 top-0 z-40 border-b backdrop-blur-xl transition duration-300 ${lightNav ? "border-black/10 bg-white/94 shadow-sm" : "border-white/10 bg-ink/35"}`}>
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <NavLink to="/" className="flex items-center gap-3" aria-label="Maithil Digitals home">
           <img className="h-12 w-12 rounded-premium object-cover" src={settings.logo.src} alt={settings.logo.alt} />
-          <span className={`hidden font-display text-lg font-black sm:block ${lightNav ? "text-black" : "text-white"}`}>{settings.siteName}</span>
+          <span className={`hidden font-display text-lg font-black lg:block ${lightNav ? "text-black" : "text-white"}`}>{settings.siteName}</span>
         </NavLink>
         <nav className="hidden items-center gap-8 lg:flex" aria-label="Primary navigation">
           {nav.map((item) => (
-            <NavLink key={item.href} to={item.href} className={({ isActive }) => `text-sm font-semibold transition ${isActive ? "text-orange" : lightNav ? "text-black hover:text-orange" : "text-white hover:text-orange"}`}>
+            <NavLink key={item.href} to={item.href} data-magnetic="6" className={({ isActive }) => `nav-magnetic text-sm font-semibold transition ${isActive ? "text-orange" : lightNav ? "text-black hover:text-orange" : "text-white hover:text-orange"}`}>
               {item.label}
             </NavLink>
           ))}

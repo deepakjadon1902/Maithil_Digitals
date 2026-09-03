@@ -28,18 +28,18 @@ export function Button({ children, variant = "primary", href, icon = true, class
 
   if (href) {
     return href.startsWith("http") ? (
-      <a className={classes} href={href} {...props}>
+      <a className={classes} href={href} data-magnetic="10" {...props}>
         {content}
       </a>
     ) : (
-      <Link className={classes} to={href} {...props}>
+      <Link className={classes} to={href} data-magnetic="10" {...props}>
         {content}
       </Link>
     );
   }
 
   return (
-    <button className={classes} {...props}>
+    <button className={classes} data-magnetic="10" {...props}>
       {content}
     </button>
   );

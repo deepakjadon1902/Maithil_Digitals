@@ -10,7 +10,7 @@ export default {
         orange: "#F06A00",
         orangeHover: "#FF7A14",
         bone: "#F7F7F5",
-        soft: "#F1F1EE",
+        soft: "#F5F8FC",
         muted: "#A6A7B3"
       },
       fontFamily: {

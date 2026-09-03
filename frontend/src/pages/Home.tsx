@@ -1,10 +1,13 @@
 import { Button } from "../components/Button";
+import { ArcPathGallery } from "../components/ArcPathGallery";
+import { DofProjectCarousel } from "../components/DofProjectCarousel";
 import { FAQAccordion } from "../components/FAQAccordion";
-import { Hero } from "../components/Hero";
+import { PinnedProcessSteps } from "../components/PinnedProcessSteps";
 import { ProjectGrid } from "../components/ProjectGrid";
 import { SectionHeading } from "../components/SectionHeading";
 import { SEO } from "../components/SEO";
 import { ServiceCard } from "../components/ServiceCard";
+import { EmptyState } from "../components/State";
 import { contentProductionImages, industries } from "../data/fallback";
 import { pageSeo, useContent } from "../hooks/useContent";
 import { faqSchema, organizationSchema } from "../lib/schema";
@@ -27,13 +30,18 @@ const process = [
 export function Home() {
   const { faqs, packages, projects, seo, services, settings } = useContent();
   const featuredServices = services.slice(0, 6);
+  const processSteps = process.map(([title, text], index) => ({
+    title,
+    text,
+    image: contentProductionImages[index % contentProductionImages.length]
+  }));
 
   return (
     <>
       <SEO seo={seo.home ?? pageSeo("home", settings.seo)} schema={[organizationSchema(settings), faqSchema(faqs)]} />
-      <Hero />
+      <ArcPathGallery />
 
-      <section className="bg-[#F5F8FC] px-4 py-16 text-navy sm:px-6 lg:px-8">
+      <section className="border-y border-navy/10 bg-white px-4 py-16 text-navy sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[.85fr_1.15fr]">
           <SectionHeading eyebrow="Introduction" title="We build more than social media." description="Your digital presence is often the first impression people have of your business." />
           <div className="rounded-premium border border-navy/10 bg-white p-6 text-lg leading-9 text-navy/70 shadow-sm">
@@ -46,16 +54,18 @@ export function Home() {
       <section className="bg-white px-4 py-16 text-navy sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <SectionHeading eyebrow="What We Do" title="Everything you need to build a stronger digital presence." />
-          <div className="mt-10 grid auto-rows-fr gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {featuredServices.map((service) => <ServiceCard key={service.slug} service={service} />)}
-          </div>
+          {featuredServices.length ? (
+            <div className="hme-stagger mt-10 grid auto-rows-fr gap-5 md:grid-cols-2 lg:grid-cols-3">
+              {featuredServices.map((service) => <ServiceCard key={service.slug} service={service} />)}
+            </div>
+          ) : <div className="mt-10"><EmptyState label="No services have been uploaded from the admin panel yet." /></div>}
         </div>
       </section>
 
-      <section className="bg-[#F5F8FC] px-4 py-16 text-navy sm:px-6 lg:px-8">
+      <section className="border-y border-navy/10 bg-white px-4 py-16 text-navy sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <SectionHeading eyebrow="Why Maithil Digitals" title="We don't just post. We build your presence." description="Every business is different. That's why we don't believe in a one-size-fits-all content strategy." />
-          <div className="mt-10 grid auto-rows-fr gap-5 md:grid-cols-2 lg:grid-cols-4">
+          <div className="hme-stagger mt-10 grid auto-rows-fr gap-5 md:grid-cols-2 lg:grid-cols-4">
             {why.map(([title, text], index) => <InfoCard key={title} number={index + 1} title={title} text={text} />)}
           </div>
         </div>
@@ -70,7 +80,7 @@ export function Home() {
             </div>
             <Button className="mt-8" href="/contact">Book A Content Shoot</Button>
           </div>
-          <div className="relative grid gap-4 sm:grid-cols-2">
+          <div className="hme-stagger relative grid gap-4 sm:grid-cols-2">
             <div className="pointer-events-none absolute -left-6 top-10 h-20 w-20 rounded-full border border-orange/20" />
             <div className="pointer-events-none absolute -right-4 bottom-12 h-28 w-28 rounded-full bg-orange/10 blur-2xl" />
             {contentProductionImages.map((media, index) => (
@@ -86,14 +96,16 @@ export function Home() {
         </div>
       </section>
 
-      <section className="bg-[#F5F8FC] px-4 py-16 text-navy sm:px-6 lg:px-8">
+      <section className="border-y border-navy/10 bg-white px-4 py-16 text-navy sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <SectionHeading eyebrow="Industries" title="Built for businesses that want to grow." description="We create customized digital strategies for different types of businesses." />
-          <div className="mt-10 grid auto-rows-fr gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div className="hme-stagger mt-10 grid auto-rows-fr gap-4 md:grid-cols-2 lg:grid-cols-4">
             {industries.map((industry) => <InfoCard key={industry.title} title={industry.title} text={industry.description} />)}
           </div>
         </div>
       </section>
+
+      <DofProjectCarousel projects={projects} />
 
       <section className="bg-white px-4 py-16 text-navy sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
@@ -105,19 +117,12 @@ export function Home() {
         </div>
       </section>
 
-      <section className="bg-[#F5F8FC] px-4 py-16 text-navy sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <SectionHeading eyebrow="Process" title="How we work" />
-          <div className="mt-10 grid auto-rows-fr gap-4 md:grid-cols-5">
-            {process.map(([title, text], index) => <InfoCard key={title} number={index + 1} title={title} text={text} />)}
-          </div>
-        </div>
-      </section>
+      <PinnedProcessSteps steps={processSteps} />
 
       <section className="bg-white px-4 py-16 text-navy sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <SectionHeading eyebrow="Packages" title="Find the right plan for your business." description="Flexible digital marketing and content packages designed for different business needs." />
-          <div className="mt-10 grid auto-rows-fr gap-5 md:grid-cols-3">
+          <div className="hme-stagger mt-10 grid auto-rows-fr gap-5 md:grid-cols-3">
             {packages.map((plan) => (
               <div key={plan.name} className="relative flex min-h-64 flex-col rounded-premium border border-navy/10 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-orange">
                 {plan.badge ? <span className="absolute right-5 top-5 rounded-full bg-orange px-3 py-1 text-xs font-black uppercase text-white">{plan.badge}</span> : null}
@@ -130,19 +135,19 @@ export function Home() {
         </div>
       </section>
 
-      <section className="bg-[#F5F8FC] px-4 py-16 text-navy sm:px-6 lg:px-8">
+      <section className="border-y border-navy/10 bg-white px-4 py-16 text-navy sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl">
           <SectionHeading eyebrow="FAQ" title="Questions businesses ask us." />
           <div className="mt-10"><FAQAccordion faqs={faqs} /></div>
         </div>
       </section>
 
-      <section className="bg-navy px-4 py-16 text-white sm:px-6 lg:px-8">
+      <section className="border-y border-navy/10 bg-white px-4 py-16 text-navy sm:px-6 lg:px-8">
         <div className="mx-auto flex max-w-7xl flex-col justify-between gap-8 md:flex-row md:items-center">
           <SectionHeading title="Ready to build your digital identity?" description="Let's turn your business into a brand people notice, remember and choose." />
           <div className="flex flex-col gap-3 sm:flex-row">
             <Button href="/contact">Start Your Project</Button>
-            <Button href={`https://wa.me/91${settings.whatsapp ?? settings.phone[0]}`} variant="ghost">WhatsApp Us</Button>
+            <Button href={`https://wa.me/91${settings.whatsapp ?? settings.phone[0]}`} variant="secondary">WhatsApp Us</Button>
           </div>
         </div>
       </section>

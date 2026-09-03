@@ -30,25 +30,29 @@ export function ProjectDetail() {
         </div>
       </section>
       {project.videoUrl ? <ProjectVideo title={`${project.title} video`} url={project.videoUrl} /> : null}
-      <ProjectText title="Challenge" text={project.challenge} />
-      <ProjectText alternate title="Strategy" text={project.strategy} />
-      <ProjectText title="Execution" text={project.execution} />
-      <section className="bg-[#F5F8FC] px-4 py-16 text-navy sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <SectionHeading title="Deliverables" />
-          <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {project.deliverables.map((item) => <div key={item} className="rounded-premium border border-navy/10 bg-white p-5 font-bold shadow-sm">{item}</div>)}
+      {project.challenge ? <ProjectText title="Challenge" text={project.challenge} /> : null}
+      {project.strategy ? <ProjectText alternate title="Strategy" text={project.strategy} /> : null}
+      {project.execution ? <ProjectText title="Execution" text={project.execution} /> : null}
+      {project.deliverables.length ? (
+        <section className="bg-[#F5F8FC] px-4 py-16 text-navy sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <SectionHeading title="Deliverables" />
+            <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              {project.deliverables.map((item) => <div key={item} className="rounded-premium border border-navy/10 bg-white p-5 font-bold shadow-sm">{item}</div>)}
+            </div>
           </div>
-        </div>
-      </section>
-      <section className="bg-white px-4 py-16 text-navy sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <SectionHeading title="Gallery" />
-          <div className="mt-10 grid gap-6 md:grid-cols-2">
-            {project.gallery.map((media) => <Image key={media.src} media={media} className="aspect-[4/3] rounded-premium border border-navy/10 object-cover shadow-sm" />)}
+        </section>
+      ) : null}
+      {project.gallery.length ? (
+        <section className="bg-white px-4 py-16 text-navy sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <SectionHeading title="Gallery" />
+            <div className="mt-10 grid gap-6 md:grid-cols-2">
+              {project.gallery.map((media) => <Image key={media.src} media={media} className="aspect-[4/3] rounded-premium border border-navy/10 object-cover shadow-sm" />)}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      ) : null}
       <section className="bg-[#F5F8FC] px-4 py-16 text-navy sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <SectionHeading title="Related work" />

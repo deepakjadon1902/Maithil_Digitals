@@ -1,10 +1,13 @@
 import { Suspense, lazy } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import { Footer } from "./components/Footer";
+import { BrandIntro } from "./components/BrandIntro";
 import { Navbar } from "./components/Navbar";
 import { PageTransition } from "./components/PageTransition";
 import { LoadingState } from "./components/State";
 import { useContent } from "./hooks/useContent";
+import { useMotionInteractions } from "./hooks/useMotionInteractions";
+import { useScrollReveal } from "./hooks/useScrollReveal";
 
 const Home = lazy(() => import("./pages/Home").then((module) => ({ default: module.Home })));
 const About = lazy(() => import("./pages/About").then((module) => ({ default: module.About })));
@@ -29,9 +32,12 @@ export default function App() {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith("/admin");
   const { settings } = useContent();
+  useScrollReveal();
+  useMotionInteractions();
 
   return (
     <>
+      {!isAdminRoute ? <BrandIntro settings={settings} /> : null}
       {!isAdminRoute ? <Navbar settings={settings} /> : null}
       <Suspense fallback={<div className="min-h-screen bg-ink p-8 pt-32 text-white"><LoadingState /></div>}>
         <PageTransition>

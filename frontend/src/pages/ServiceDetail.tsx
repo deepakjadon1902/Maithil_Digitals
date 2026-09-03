@@ -28,11 +28,11 @@ export function ServiceDetail() {
         </div>
       </section>
       {service.videoUrl ? <VideoSection title={`${service.title} video`} url={service.videoUrl} /> : null}
-      <DetailBlocks title="Problems we solve" items={service.problems} />
-      <DetailBlocks title="Our approach" items={service.approach} alternate />
-      <DetailBlocks title="Capabilities" items={service.capabilities} />
-      <section className="bg-white px-4 py-16 text-navy sm:px-6 lg:px-8"><div className="mx-auto max-w-7xl"><SectionHeading title="Relevant work" /><div className="mt-10"><ProjectGrid projects={projects.slice(0, 2)} /></div></div></section>
-      <section className="bg-[#F5F8FC] px-4 py-16 text-navy sm:px-6 lg:px-8"><div className="mx-auto max-w-4xl"><SectionHeading title="Service FAQ" /><div className="mt-10"><FAQAccordion faqs={service.faq} /></div></div></section>
+      {service.problems.length ? <DetailBlocks title="Problems we solve" items={service.problems} /> : null}
+      {service.approach.length ? <DetailBlocks title="Our approach" items={service.approach} alternate /> : null}
+      {service.capabilities.length ? <DetailBlocks title="Capabilities" items={service.capabilities} /> : null}
+      {projects.length ? <section className="bg-white px-4 py-16 text-navy sm:px-6 lg:px-8"><div className="mx-auto max-w-7xl"><SectionHeading title="Relevant work" /><div className="mt-10"><ProjectGrid projects={projects.slice(0, 2)} /></div></div></section> : null}
+      {service.faq.length ? <section className="bg-[#F5F8FC] px-4 py-16 text-navy sm:px-6 lg:px-8"><div className="mx-auto max-w-4xl"><SectionHeading title="Service FAQ" /><div className="mt-10"><FAQAccordion faqs={service.faq} /></div></div></section> : null}
       <section className="bg-navy px-4 py-16 text-white sm:px-6 lg:px-8"><div className="mx-auto flex max-w-7xl flex-col justify-between gap-8 md:flex-row md:items-center"><SectionHeading title="Ready to plan this service?" description="Share your business goals and we will help shape the right path." /><Button href="/contact">Start a Conversation</Button></div></section>
     </>
   );
