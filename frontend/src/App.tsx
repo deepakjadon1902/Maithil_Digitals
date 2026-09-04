@@ -1,4 +1,4 @@
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import { Footer } from "./components/Footer";
 import { BrandIntro } from "./components/BrandIntro";
@@ -37,6 +37,7 @@ export default function App() {
 
   return (
     <>
+      <ScrollToTop />
       {!isAdminRoute ? <BrandIntro settings={settings} /> : null}
       {!isAdminRoute ? <Navbar settings={settings} /> : null}
       <Suspense fallback={<div className="min-h-screen bg-ink p-8 pt-32 text-white"><LoadingState /></div>}>
@@ -58,8 +59,8 @@ export default function App() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
-            <Route path="/admin/login" element={<ControlPanel />} />
-            <Route path="/admin/dashboard" element={<ControlPanel />} />
+            <Route path="/admin/login" element={<ControlPanel settings={settings} />} />
+            <Route path="/admin/dashboard" element={<ControlPanel settings={settings} />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </PageTransition>
@@ -67,4 +68,17 @@ export default function App() {
       {!isAdminRoute ? <Footer settings={settings} /> : null}
     </>
   );
+}
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [pathname]);
+
+  return null;
 }

@@ -1,5 +1,6 @@
 import { Button } from "../components/Button";
 import { ArcPathGallery } from "../components/ArcPathGallery";
+import { ContentMotionCards } from "../components/ContentMotionCards";
 import { DofProjectCarousel } from "../components/DofProjectCarousel";
 import { FAQAccordion } from "../components/FAQAccordion";
 import { PinnedProcessSteps } from "../components/PinnedProcessSteps";
@@ -8,7 +9,7 @@ import { SectionHeading } from "../components/SectionHeading";
 import { SEO } from "../components/SEO";
 import { ServiceCard } from "../components/ServiceCard";
 import { EmptyState } from "../components/State";
-import { contentProductionImages, industries } from "../data/fallback";
+import { industries } from "../data/fallback";
 import { pageSeo, useContent } from "../hooks/useContent";
 import { faqSchema, organizationSchema } from "../lib/schema";
 
@@ -27,13 +28,29 @@ const process = [
   ["Optimize", "We monitor performance and improve the strategy over time."]
 ];
 
+const processImages = [
+  { src: "/brand/01_Discover.png", alt: "Maithil Digitals discovery and business planning visual" },
+  { src: "/brand/02_Plan.png", alt: "Maithil Digitals content planning visual" },
+  { src: "/brand/03_Create.png", alt: "Maithil Digitals content creation visual" },
+  { src: "/brand/04_Publish.png", alt: "Maithil Digitals publishing and campaign management visual" },
+  { src: "/brand/05_Optimize.png", alt: "Maithil Digitals optimization and growth reporting visual" }
+];
+
+const contentShowcaseImages = [
+  { src: "/brand/food.png", alt: "Food content production by Maithil Digitals", label: "Food" },
+  { src: "/brand/reels.png", alt: "Reels video production by Maithil Digitals", label: "Reels" },
+  { src: "/brand/product.png", alt: "Product content production by Maithil Digitals", label: "Product" },
+  { src: "/brand/lifestyle.png", alt: "Lifestyle brand content by Maithil Digitals", label: "Lifestyle" },
+  { src: "/brand/fashion.png", alt: "Fashion content production by Maithil Digitals", label: "Fashion" }
+];
+
 export function Home() {
   const { faqs, packages, projects, seo, services, settings } = useContent();
   const featuredServices = services.slice(0, 6);
   const processSteps = process.map(([title, text], index) => ({
     title,
     text,
-    image: contentProductionImages[index % contentProductionImages.length]
+    image: processImages[index]
   }));
 
   return (
@@ -80,19 +97,7 @@ export function Home() {
             </div>
             <Button className="mt-8" href="/contact">Book A Content Shoot</Button>
           </div>
-          <div className="hme-stagger relative grid gap-4 sm:grid-cols-2">
-            <div className="pointer-events-none absolute -left-6 top-10 h-20 w-20 rounded-full border border-orange/20" />
-            <div className="pointer-events-none absolute -right-4 bottom-12 h-28 w-28 rounded-full bg-orange/10 blur-2xl" />
-            {contentProductionImages.map((media, index) => (
-              <div key={media.src} className={`${index === 1 ? "sm:mt-8" : ""} ${index === 2 ? "sm:-mt-2" : ""} ${index % 3 === 0 ? "md-float-soft" : index % 3 === 1 ? "md-float-soft-alt" : "md-float-soft-slow"} tilt-card group relative overflow-hidden rounded-premium border border-navy/10 bg-[#F5F8FC] shadow-sm transition hover:-translate-y-1 hover:border-orange hover:shadow-xl hover:shadow-navy/10`}>
-                <img className="aspect-[4/3] h-full w-full object-cover transition duration-700 group-hover:scale-[1.07]" src={media.src} alt={media.alt} loading="lazy" />
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/58 via-transparent to-transparent opacity-0 transition duration-500 group-hover:opacity-100" />
-                <div className="absolute bottom-4 left-4 rounded-premium border border-white/15 bg-white/92 px-3 py-2 text-xs font-black uppercase tracking-[0.14em] text-navy shadow-sm backdrop-blur">
-                  {["Food", "Reels", "Product", "Lifestyle"][index] ?? "Content"}
-                </div>
-              </div>
-            ))}
-          </div>
+          <ContentMotionCards items={contentShowcaseImages} />
         </div>
       </section>
 

@@ -63,15 +63,15 @@ export function Navbar({ settings }: { settings: SiteSettings }) {
   const lightNav = open || !navOnDark;
 
   return (
-    <header className={`fixed inset-x-0 top-0 z-40 border-b backdrop-blur-xl transition duration-300 ${lightNav ? "border-black/10 bg-white/94 shadow-sm" : "border-white/10 bg-ink/35"}`}>
+    <header className={`fixed inset-x-0 top-0 z-40 transition duration-300 ${lightNav ? "text-black" : "text-white"}`}>
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <NavLink to="/" className="flex items-center gap-3" aria-label="Maithil Digitals home">
           <img className="h-12 w-12 rounded-premium object-cover" src={settings.logo.src} alt={settings.logo.alt} />
           <span className={`hidden font-display text-lg font-black lg:block ${lightNav ? "text-black" : "text-white"}`}>{settings.siteName}</span>
         </NavLink>
-        <nav className="hidden items-center gap-8 lg:flex" aria-label="Primary navigation">
+        <nav className={`nav-glass-capsule hidden items-center gap-1 lg:flex ${lightNav ? "nav-glass-capsule--light" : "nav-glass-capsule--dark"}`} aria-label="Primary navigation">
           {nav.map((item) => (
-            <NavLink key={item.href} to={item.href} data-magnetic="6" className={({ isActive }) => `nav-magnetic text-sm font-semibold transition ${isActive ? "text-orange" : lightNav ? "text-black hover:text-orange" : "text-white hover:text-orange"}`}>
+            <NavLink key={item.href} to={item.href} data-magnetic="6" className={({ isActive }) => `nav-magnetic nav-glass-link text-sm font-semibold transition ${isActive ? "is-active text-orange" : lightNav ? "text-black hover:text-orange" : "text-white hover:text-orange"}`}>
               {item.label}
             </NavLink>
           ))}

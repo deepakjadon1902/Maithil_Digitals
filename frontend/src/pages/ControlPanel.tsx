@@ -25,6 +25,7 @@ import { Button } from "../components/Button";
 import { SEO } from "../components/SEO";
 import { packageCategories as fallbackPackageCategories } from "../data/fallback";
 import { adminApi } from "../services/adminApi";
+import type { SiteSettings } from "../types/content";
 
 type ContentConfig = {
   resource: string;
@@ -45,7 +46,7 @@ type FieldConfig = {
   span?: "full";
 };
 
-export function ControlPanel() {
+export function ControlPanel({ settings }: { settings: SiteSettings }) {
   const [session, setSession] = useState<"checking" | "guest" | "admin">("checking");
   const [active, setActive] = useState("dashboard");
   const location = useLocation();
@@ -65,7 +66,7 @@ export function ControlPanel() {
   }
 
   if (session === "guest") {
-    return <AdminLogin onSuccess={() => {
+    return <AdminLogin settings={settings} onSuccess={() => {
       setSession("admin");
       navigate("/admin/dashboard", { replace: true });
     }} />;
@@ -76,33 +77,33 @@ export function ControlPanel() {
   return (
     <>
       <SEO seo={{ title: "Admin Dashboard | Maithil Digitals", description: "Administration dashboard for Maithil Digitals.", robots: "noindex,nofollow" }} />
-      <div className="min-h-screen bg-[#090a13] text-white">
+      <div className="min-h-screen bg-[#f8fafc] text-navy">
         <div className="mx-auto grid min-h-screen max-w-[1440px] gap-6 px-4 py-4 md:px-6 lg:grid-cols-[280px_1fr] lg:py-6">
-          <aside className="self-start rounded-premium border border-white/10 bg-white/[0.045] p-3 shadow-2xl shadow-black/20 lg:sticky lg:top-6">
+          <aside className="self-start rounded-premium border border-navy/10 bg-white p-3 shadow-xl shadow-navy/5 lg:sticky lg:top-6">
             <div className="flex items-center gap-3 px-3 py-4">
               <span className="grid size-10 place-items-center rounded-premium bg-orange/10 text-orange"><Lock size={20} /></span>
               <div>
                 <strong className="block text-base">Control Panel</strong>
-                <span className="text-xs text-muted">Maithil Digitals</span>
+                <span className="text-xs font-bold text-navy/55">{settings.siteName}</span>
               </div>
             </div>
             <nav className="mt-2 grid gap-1" aria-label="Admin navigation">
               {adminNav.map((item) => (
-                <button key={item.key} onClick={() => setActive(item.key)} className={`flex min-h-11 items-center gap-3 rounded-premium px-3 text-left text-sm font-bold transition ${active === item.key ? "bg-orange text-white shadow-glow" : "text-muted hover:bg-white/[0.06] hover:text-white"}`}>
+                <button key={item.key} onClick={() => setActive(item.key)} className={`flex min-h-11 items-center gap-3 rounded-premium px-3 text-left text-sm font-bold transition ${active === item.key ? "bg-orange text-white shadow-glow" : "text-navy/62 hover:bg-soft hover:text-navy"}`}>
                   <item.icon size={17} /> {item.label}
                 </button>
               ))}
-              <button onClick={() => adminApi.logout().finally(() => setSession("guest"))} className="mt-4 flex min-h-11 items-center gap-3 rounded-premium px-3 text-left text-sm font-bold text-muted transition hover:bg-white/[0.06] hover:text-white"><LogOut size={17} /> Logout</button>
+              <button onClick={() => adminApi.logout().finally(() => setSession("guest"))} className="mt-4 flex min-h-11 items-center gap-3 rounded-premium px-3 text-left text-sm font-bold text-navy/55 transition hover:bg-orange/10 hover:text-orange"><LogOut size={17} /> Logout</button>
             </nav>
           </aside>
 
-          <main className="min-w-0 rounded-premium border border-white/10 bg-white/[0.045] shadow-2xl shadow-black/20">
-            <div className="border-b border-white/10 px-5 py-4 md:px-7">
+          <main className="min-w-0 rounded-premium border border-navy/10 bg-white shadow-xl shadow-navy/5">
+            <div className="border-b border-navy/10 bg-white px-5 py-4 md:px-7">
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-orange">Admin Workspace</p>
                 <h1 className="mt-1 text-2xl font-black md:text-3xl">{activeLabel}</h1>
               </div>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-muted">Changes save to the live demo store now and will use MongoDB automatically once the backend is connected.</p>
+              <p className="mt-2 max-w-3xl text-sm font-semibold leading-6 text-navy/60">Changes save to the live demo store now and will use MongoDB automatically once the backend is connected.</p>
             </div>
             <div className="p-5 md:p-7">
               {active === "dashboard" ? <Dashboard onOpen={setActive} /> : null}
@@ -121,7 +122,7 @@ export function ControlPanel() {
   );
 }
 
-function AdminLogin({ onSuccess }: { onSuccess: () => void }) {
+function AdminLogin({ settings, onSuccess }: { settings: SiteSettings; onSuccess: () => void }) {
   const [email, setEmail] = useState("maithildigitals@gmail.com");
   const [password, setPassword] = useState("maithildigitals@108");
   const [showPassword, setShowPassword] = useState(false);
@@ -139,17 +140,28 @@ function AdminLogin({ onSuccess }: { onSuccess: () => void }) {
   }
 
   return (
-    <AdminShell>
-      <form onSubmit={submit} className="w-full max-w-md rounded-premium border border-white/10 bg-white/[0.055] p-6 shadow-2xl shadow-black/30 md:p-8">
-        <span className="grid size-12 place-items-center rounded-premium bg-orange/10 text-orange"><Lock size={26} /></span>
-        <h1 className="mt-6 font-display text-4xl font-black">Control Panel</h1>
-        <p className="mt-3 text-sm leading-6 text-muted">Sign in to manage the public website content and enquiries.</p>
+    <AdminShell className="relative overflow-hidden">
+      <div className="pointer-events-none absolute inset-0 opacity-[0.035]" aria-hidden="true">
+        <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-8 whitespace-nowrap">
+          <img className="size-40 rounded-premium object-cover md:size-56" src={settings.logo.src} alt="" />
+          <span className="font-display text-7xl font-black uppercase tracking-tight text-navy md:text-9xl">{settings.siteName}</span>
+        </div>
+      </div>
+      <form onSubmit={submit} className="relative w-full max-w-md rounded-premium border border-navy/10 bg-white/95 p-6 shadow-2xl shadow-navy/10 backdrop-blur md:p-8">
+        <div className="flex items-center gap-3">
+          <img className="size-12 rounded-premium object-cover shadow-sm" src={settings.logo.src} alt={settings.logo.alt} />
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-orange">{settings.siteName}</p>
+            <h1 className="font-display text-3xl font-black text-navy">Control Panel</h1>
+          </div>
+        </div>
+        <p className="mt-5 text-sm font-semibold leading-6 text-navy/62">Sign in to manage the public website content and enquiries.</p>
         <Field label="Email" value={email} onChange={setEmail} type="text" className="mt-8" />
         <label className="mt-4 block text-sm font-bold">
           Password
           <div className="relative mt-2">
             <input className={`${adminInput} mt-0 pr-12`} value={password} onChange={(event) => setPassword(event.target.value)} type={showPassword ? "text" : "password"} />
-            <button aria-label={showPassword ? "Hide password" : "Show password"} className="absolute right-3 top-1/2 grid size-8 -translate-y-1/2 place-items-center rounded-full text-muted transition hover:bg-white/10 hover:text-white" type="button" onClick={() => setShowPassword((value) => !value)}>
+            <button aria-label={showPassword ? "Hide password" : "Show password"} className="absolute right-3 top-1/2 grid size-8 -translate-y-1/2 place-items-center rounded-full text-navy/50 transition hover:bg-soft hover:text-navy" type="button" onClick={() => setShowPassword((value) => !value)}>
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
@@ -161,12 +173,12 @@ function AdminLogin({ onSuccess }: { onSuccess: () => void }) {
   );
 }
 
-function AdminShell({ children }: { children: ReactNode }) {
-  return <section className="grid min-h-screen place-items-center bg-[#090a13] px-4 py-20 text-white">{children}</section>;
+function AdminShell({ children, className = "" }: { children: ReactNode; className?: string }) {
+  return <section className={`grid min-h-screen place-items-center bg-[#f8fafc] px-4 py-20 text-navy ${className}`}>{children}</section>;
 }
 
 function StatusCard({ title, description }: { title: string; description: string }) {
-  return <div className="rounded-premium border border-white/10 bg-white/[0.05] p-6"><h1 className="text-xl font-black">{title}</h1><p className="mt-2 text-sm text-muted">{description}</p></div>;
+  return <div className="rounded-premium border border-navy/10 bg-white p-6 shadow-xl shadow-navy/5"><h1 className="text-xl font-black">{title}</h1><p className="mt-2 text-sm font-semibold text-navy/60">{description}</p></div>;
 }
 
 function PageIntro({ eyebrow, title, description, action }: { eyebrow: string; title: string; description: string; action?: ReactNode }) {
@@ -175,7 +187,7 @@ function PageIntro({ eyebrow, title, description, action }: { eyebrow: string; t
       <div className="max-w-3xl">
         <p className="text-xs font-black uppercase tracking-[0.18em] text-orange">{eyebrow}</p>
         <h2 className="mt-3 font-display text-4xl font-black md:text-5xl">{title}</h2>
-        <p className="mt-4 max-w-2xl text-base leading-7 text-muted">{description}</p>
+        <p className="mt-4 max-w-2xl text-base font-semibold leading-7 text-navy/62">{description}</p>
       </div>
       {action}
     </div>
@@ -198,14 +210,14 @@ function Dashboard({ onOpen }: { onOpen: (key: string) => void }) {
       <PageIntro eyebrow="Dashboard" title="Website command center" description="Jump into the content areas that affect the public site, review enquiry volume, and keep your important website data tidy." />
       <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {cards.map((card) => (
-          <button key={card.key} onClick={() => onOpen(card.open)} className="group rounded-premium border border-white/10 bg-[#0d0e1c] p-5 text-left transition hover:-translate-y-0.5 hover:border-orange">
-            <span className="grid size-10 place-items-center rounded-premium bg-white/[0.06] text-orange"><card.icon size={18} /></span>
-            <p className="mt-5 text-xs font-black uppercase tracking-[0.16em] text-muted">Total {card.label}</p>
+          <button key={card.key} onClick={() => onOpen(card.open)} className="group rounded-premium border border-navy/10 bg-white p-5 text-left shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-orange hover:shadow-xl hover:shadow-navy/10">
+            <span className="grid size-10 place-items-center rounded-premium bg-orange/10 text-orange"><card.icon size={18} /></span>
+            <p className="mt-5 text-xs font-black uppercase tracking-[0.16em] text-navy/55">Total {card.label}</p>
             <strong className="mt-2 block text-4xl">{String(data?.[card.key] ?? "0")}</strong>
           </button>
         ))}
       </div>
-      <div className="mt-8 rounded-premium border border-white/10 bg-[#0d0e1c] p-5">
+      <div className="mt-8 rounded-premium border border-navy/10 bg-white p-5 shadow-sm">
         <h3 className="text-xl font-black">Recommended workflow</h3>
         <div className="mt-5 grid gap-3 md:grid-cols-3">
           {[
@@ -213,9 +225,9 @@ function Dashboard({ onOpen }: { onOpen: (key: string) => void }) {
             ["Maintain content", "Add services, projects and videos with images and clean URLs.", "services"],
             ["Handle enquiries", "Review new leads and update their status as you follow up.", "enquiries"]
           ].map(([title, description, key]) => (
-            <button key={title} onClick={() => onOpen(key)} className="rounded-premium border border-white/10 bg-white/[0.035] p-4 text-left transition hover:border-orange">
+            <button key={title} onClick={() => onOpen(key)} className="rounded-premium border border-navy/10 bg-soft p-4 text-left transition duration-300 hover:-translate-y-0.5 hover:border-orange hover:bg-white hover:shadow-lg hover:shadow-navy/5">
               <h4 className="font-black">{title}</h4>
-              <p className="mt-2 text-sm leading-6 text-muted">{description}</p>
+              <p className="mt-2 text-sm font-semibold leading-6 text-navy/60">{description}</p>
             </button>
           ))}
         </div>
@@ -358,7 +370,7 @@ function PackageSettings() {
         <div>
           <p className="text-xs font-black uppercase tracking-[0.18em] text-orange">Package Categories</p>
           <h3 className="mt-2 text-2xl font-black">Business category pages</h3>
-          <p className="mt-2 text-sm text-muted">These create clickable category pages on the Packages screen.</p>
+          <p className="mt-2 text-sm font-semibold text-navy/60">These create clickable category pages on the Packages screen.</p>
         </div>
         <button className={secondaryButton} onClick={addCategory}><Plus size={16} />Add category</button>
       </div>
@@ -431,17 +443,17 @@ function ContentManager({ config }: { config: ContentConfig }) {
       <div className="mt-8 grid gap-6 xl:grid-cols-[minmax(0,1fr)_440px]">
         <Panel title="Records" description={`${filtered.length} item${filtered.length === 1 ? "" : "s"} available`}>
           <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" size={17} />
+            <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-navy/45" size={17} />
             <input className={`${adminInput} mt-0 pl-10`} value={query} onChange={(event) => setQuery(event.target.value)} placeholder={`Search ${config.title.toLowerCase()}`} />
           </div>
           <div className="mt-4 grid gap-3">
             {filtered.length ? filtered.map((item) => (
-              <article key={String(item._id)} className={`rounded-premium border p-4 transition ${String(editing._id ?? "") === String(item._id) ? "border-orange bg-orange/10" : "border-white/10 bg-white/[0.035] hover:border-white/20"}`}>
+              <article key={String(item._id)} className={`rounded-premium border p-4 shadow-sm transition duration-300 ${String(editing._id ?? "") === String(item._id) ? "border-orange bg-orange/10 shadow-orange/10" : "border-navy/10 bg-white hover:-translate-y-0.5 hover:border-orange hover:shadow-lg hover:shadow-navy/5"}`}>
                 <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                   <div className="min-w-0">
                     <h3 className="truncate text-lg font-black">{String(item.title ?? item.name ?? "Untitled")}</h3>
                     <div className="mt-2 flex flex-wrap gap-2">
-                      {config.summary.map((key) => String(item[key] ?? "").trim() ? <span key={key} className="rounded-full border border-white/10 px-2.5 py-1 text-xs font-bold text-muted">{labelFromKey(key)}: {String(item[key])}</span> : null)}
+                      {config.summary.map((key) => String(item[key] ?? "").trim() ? <span key={key} className="rounded-full border border-navy/10 bg-soft px-2.5 py-1 text-xs font-bold text-navy/58">{labelFromKey(key)}: {String(item[key])}</span> : null)}
                     </div>
                   </div>
                   <div className="flex shrink-0 flex-wrap gap-2">
@@ -504,11 +516,11 @@ function InlineMediaControls({ resource, value, onChange }: { resource: string; 
   }
 
   return (
-    <div className="mb-5 rounded-premium border border-white/10 bg-white/[0.035] p-4">
+    <div className="mb-5 rounded-premium border border-navy/10 bg-soft p-4">
       <div className="flex items-start justify-between gap-4">
         <div>
           <h4 className="font-black">Media for this {label}</h4>
-          <p className="mt-1 text-sm leading-6 text-muted">Attach an image or video from device upload, direct URL, YouTube, or social media.</p>
+          <p className="mt-1 text-sm font-semibold leading-6 text-navy/60">Attach an image or video from device upload, direct URL, YouTube, or social media.</p>
         </div>
         <ImageUp className="shrink-0 text-orange" size={20} />
       </div>
@@ -517,7 +529,7 @@ function InlineMediaControls({ resource, value, onChange }: { resource: string; 
         <SelectField label="Source" value={source} onChange={(next) => setSource(next as "device" | "url" | "social")} options={[["device", "Browse device"], ["url", "Direct URL"], ["social", "YouTube/social link"]]} />
       </div>
       {source === "device" ? (
-        <label className="mt-4 flex cursor-pointer items-center justify-between gap-3 rounded-premium border border-white/15 px-4 py-3 text-sm font-black transition hover:border-orange hover:text-orange">
+        <label className="mt-4 flex cursor-pointer items-center justify-between gap-3 rounded-premium border border-navy/10 bg-white px-4 py-3 text-sm font-black transition hover:border-orange hover:text-orange">
           <span>{kind === "image" ? "Upload image" : "Upload video"}</span>
           <UploadCloud size={17} />
           <input className="hidden" type="file" accept={kind === "image" ? "image/jpeg,image/png,image/webp,image/avif" : "video/mp4,video/webm,video/quicktime"} onChange={upload} />
@@ -528,9 +540,9 @@ function InlineMediaControls({ resource, value, onChange }: { resource: string; 
           <button className={`${secondaryButton} shrink-0`} onClick={() => applyUrl(url)}>Attach</button>
         </div>
       )}
-      <div className="mt-4 grid gap-2 text-xs font-bold text-muted">
-        <p>Image URL: <span className="break-all text-white">{String(value.imageUrl ?? "Not attached")}</span></p>
-        <p>Video URL: <span className="break-all text-white">{String(value.videoUrl ?? "Not attached")}</span></p>
+      <div className="mt-4 grid gap-2 text-xs font-bold text-navy/55">
+        <p>Image URL: <span className="break-all text-navy">{String(value.imageUrl ?? "Not attached")}</span></p>
+        <p>Video URL: <span className="break-all text-navy">{String(value.videoUrl ?? "Not attached")}</span></p>
       </div>
       {status ? <p className="mt-3 text-sm font-bold text-orange">{status}</p> : null}
     </div>
@@ -561,20 +573,20 @@ function EnquiryManager() {
       <PageIntro eyebrow="Inbox" title="Contacts and enquiries" description="Review every public contact form submission, follow up quickly, and track each lead status." />
       <div className="mt-8 grid gap-4">
         {items.length ? items.map((item) => (
-          <article key={String(item._id)} className="rounded-premium border border-white/10 bg-[#0d0e1c] p-5">
+          <article key={String(item._id)} className="rounded-premium border border-navy/10 bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-orange hover:shadow-lg hover:shadow-navy/5">
             <div className="grid gap-5 xl:grid-cols-[1fr_1.2fr_auto]">
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.16em] text-orange">{String(item.status ?? "new")}</p>
                 <h3 className="mt-2 text-xl font-black">{String(item.name ?? "Unnamed enquiry")}</h3>
-                <p className="mt-2 text-sm text-muted">{item.createdAt ? new Date(String(item.createdAt)).toLocaleString() : "No date available"}</p>
+                <p className="mt-2 text-sm font-semibold text-navy/55">{item.createdAt ? new Date(String(item.createdAt)).toLocaleString() : "No date available"}</p>
               </div>
-              <div className="grid gap-3 text-sm text-muted md:grid-cols-2">
-                <a className="flex items-center gap-2 hover:text-white" href={`mailto:${String(item.email ?? "")}`}><Mail size={16} />{String(item.email ?? "")}</a>
-                <a className="flex items-center gap-2 hover:text-white" href={`tel:${String(item.phone ?? "")}`}><Phone size={16} />{String(item.phone ?? "")}</a>
-                <p><span className="font-bold text-white">Business:</span> {String(item.businessName ?? item.company ?? "-")}</p>
-                <p><span className="font-bold text-white">Type:</span> {String(item.businessType ?? "-")}</p>
-                <p><span className="font-bold text-white">Service:</span> {String(item.servicesRequired ?? item.service ?? "-")}</p>
-                <p className="md:col-span-2"><span className="font-bold text-white">Message:</span> {String(item.message ?? "")}</p>
+              <div className="grid gap-3 text-sm font-semibold text-navy/62 md:grid-cols-2">
+                <a className="flex items-center gap-2 hover:text-orange" href={`mailto:${String(item.email ?? "")}`}><Mail size={16} />{String(item.email ?? "")}</a>
+                <a className="flex items-center gap-2 hover:text-orange" href={`tel:${String(item.phone ?? "")}`}><Phone size={16} />{String(item.phone ?? "")}</a>
+                <p><span className="font-bold text-navy">Business:</span> {String(item.businessName ?? item.company ?? "-")}</p>
+                <p><span className="font-bold text-navy">Type:</span> {String(item.businessType ?? "-")}</p>
+                <p><span className="font-bold text-navy">Service:</span> {String(item.servicesRequired ?? item.service ?? "-")}</p>
+                <p className="md:col-span-2"><span className="font-bold text-navy">Message:</span> {String(item.message ?? "")}</p>
               </div>
               <div className="flex items-start gap-2">
                 <select className={`${adminInput} mt-0 min-w-36`} value={String(item.status ?? "New")} onChange={(event) => updateStatus(String(item._id), event.target.value)}>
@@ -690,10 +702,10 @@ function MediaManager({ defaultTarget = "videos", lockTarget = false, lockMediaK
           ) : null}
 
           {sourceType === "device" ? (
-            <label className="mt-5 block rounded-premium border border-dashed border-white/20 bg-white/[0.035] p-5">
+            <label className="mt-5 block rounded-premium border border-dashed border-navy/20 bg-soft p-5">
               <span className="flex items-center gap-3 text-lg font-black"><UploadCloud className="text-orange" size={22} />Choose {mediaKind}</span>
-              <span className="mt-2 block text-sm leading-6 text-muted">{mediaKind === "image" ? "JPG, PNG, WebP or AVIF." : "MP4, WebM or MOV."} The returned URL will be placed into the form.</span>
-              <span className="mt-4 inline-flex min-h-11 items-center rounded-premium border border-white/15 px-4 text-sm font-black transition hover:border-orange hover:text-orange">Browse file</span>
+              <span className="mt-2 block text-sm font-semibold leading-6 text-navy/60">{mediaKind === "image" ? "JPG, PNG, WebP or AVIF." : "MP4, WebM or MOV."} The returned URL will be placed into the form.</span>
+              <span className="mt-4 inline-flex min-h-11 items-center rounded-premium border border-navy/10 bg-white px-4 text-sm font-black transition hover:border-orange hover:text-orange">Browse file</span>
               <input className="hidden" type="file" accept={accept} onChange={uploadFile} />
             </label>
           ) : (
@@ -701,9 +713,9 @@ function MediaManager({ defaultTarget = "videos", lockTarget = false, lockMediaK
           )}
 
           {form.mediaUrl ? (
-            <div className="mt-5 rounded-premium border border-white/10 bg-white/[0.035] p-4">
+            <div className="mt-5 rounded-premium border border-navy/10 bg-soft p-4">
               <p className="text-xs font-black uppercase tracking-[0.16em] text-orange">Selected media URL</p>
-              <p className="mt-2 break-all text-sm text-muted">{form.mediaUrl}</p>
+              <p className="mt-2 break-all text-sm font-semibold text-navy/62">{form.mediaUrl}</p>
             </div>
           ) : null}
         </Panel>
@@ -733,10 +745,10 @@ function MediaManager({ defaultTarget = "videos", lockTarget = false, lockMediaK
 
 function Panel({ title, description, children, sticky = false }: { title: string; description?: string; children: ReactNode; sticky?: boolean }) {
   return (
-    <section className={`rounded-premium border border-white/10 bg-[#0d0e1c] p-5 ${sticky ? "xl:sticky xl:top-6" : ""}`}>
+    <section className={`rounded-premium border border-navy/10 bg-white p-5 shadow-sm ${sticky ? "xl:sticky xl:top-6" : ""}`}>
       <div className="mb-5">
         <h3 className="text-xl font-black">{title}</h3>
-        {description ? <p className="mt-2 text-sm leading-6 text-muted">{description}</p> : null}
+        {description ? <p className="mt-2 text-sm font-semibold leading-6 text-navy/60">{description}</p> : null}
       </div>
       {children}
     </section>
@@ -758,7 +770,7 @@ function ReadOnlyField({ label, value }: { label: string; value: string }) {
   return (
     <div className="block text-sm font-bold">
       {label}
-      <div className="mt-2 flex min-h-12 items-center rounded-premium border border-white/10 bg-white/[0.06] px-4 text-sm font-black text-white">{value}</div>
+      <div className="mt-2 flex min-h-12 items-center rounded-premium border border-navy/10 bg-soft px-4 text-sm font-black text-navy">{value}</div>
     </div>
   );
 }
@@ -772,7 +784,7 @@ function Field({ label, value, onChange, textarea = false, icon, className = "",
       ) : (
         <input className={adminInput} type={type} value={value} placeholder={placeholder} onChange={(event) => onChange(event.target.value)} />
       )}
-      {helper ? <span className="mt-2 block text-xs font-semibold text-muted">{helper}</span> : null}
+      {helper ? <span className="mt-2 block text-xs font-semibold text-navy/55">{helper}</span> : null}
     </label>
   );
 }
@@ -786,7 +798,7 @@ function SaveMessage({ message }: { message: string }) {
 }
 
 function EmptyState({ title, description }: { title: string; description: string }) {
-  return <div className="rounded-premium border border-dashed border-white/15 bg-white/[0.025] p-8 text-center"><h3 className="text-lg font-black">{title}</h3><p className="mt-2 text-sm text-muted">{description}</p></div>;
+  return <div className="rounded-premium border border-dashed border-navy/15 bg-soft p-8 text-center"><h3 className="text-lg font-black">{title}</h3><p className="mt-2 text-sm font-semibold text-navy/60">{description}</p></div>;
 }
 
 function labelFromKey(key: string) {
@@ -852,11 +864,11 @@ function formatBytes(bytes: number) {
   return `${(bytes / 1024 ** index).toFixed(1)} ${units[index]}`;
 }
 
-const adminInput = "mt-2 min-h-12 w-full rounded-premium border border-white/20 bg-white px-4 py-3 text-sm font-semibold text-ink placeholder:text-[#7b7f8f] shadow-sm focus:border-orange focus:outline-none focus:ring-2 focus:ring-orange/25";
-const adminButton = "inline-flex min-h-12 min-w-36 items-center justify-center gap-2 rounded-premium bg-orange px-5 text-sm font-black text-white shadow-glow transition hover:bg-orangeHover";
-const secondaryButton = "inline-flex min-h-12 min-w-28 items-center justify-center rounded-premium border border-white/15 px-5 text-sm font-black text-white transition hover:border-orange hover:text-orange";
-const actionButton = "inline-flex min-h-11 min-w-24 items-center justify-center gap-2 rounded-premium border border-white/15 bg-white/[0.045] px-4 text-sm font-black text-white transition hover:border-orange hover:bg-orange hover:text-white";
-const dangerButton = "inline-flex min-h-11 min-w-24 items-center justify-center gap-2 rounded-premium border border-white/15 bg-white/[0.045] px-4 text-sm font-black text-muted transition hover:border-orange hover:text-orange";
+const adminInput = "mt-2 min-h-12 w-full rounded-premium border border-navy/12 bg-white px-4 py-3 text-sm font-semibold text-ink placeholder:text-navy/35 shadow-sm transition focus:border-orange focus:outline-none focus:ring-2 focus:ring-orange/20";
+const adminButton = "inline-flex min-h-12 min-w-36 items-center justify-center gap-2 rounded-premium bg-orange px-5 text-sm font-black text-white shadow-glow transition duration-300 hover:-translate-y-0.5 hover:bg-orangeHover";
+const secondaryButton = "inline-flex min-h-12 min-w-28 items-center justify-center gap-2 rounded-premium border border-navy/12 bg-white px-5 text-sm font-black text-navy shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-orange hover:text-orange";
+const actionButton = "inline-flex min-h-11 min-w-24 items-center justify-center gap-2 rounded-premium border border-navy/12 bg-white px-4 text-sm font-black text-navy shadow-sm transition duration-300 hover:border-orange hover:bg-orange hover:text-white";
+const dangerButton = "inline-flex min-h-11 min-w-24 items-center justify-center gap-2 rounded-premium border border-navy/12 bg-white px-4 text-sm font-black text-navy/58 shadow-sm transition duration-300 hover:border-orange hover:text-orange";
 
 const contentConfigs: Record<string, ContentConfig> = {
   services: {
