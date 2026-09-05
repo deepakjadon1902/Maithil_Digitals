@@ -4,12 +4,11 @@ import { Footer } from "./components/Footer";
 import { BrandIntro } from "./components/BrandIntro";
 import { Navbar } from "./components/Navbar";
 import { PageTransition } from "./components/PageTransition";
-import { LoadingState } from "./components/State";
 import { useContent } from "./hooks/useContent";
 import { useMotionInteractions } from "./hooks/useMotionInteractions";
 import { useScrollReveal } from "./hooks/useScrollReveal";
+import { Home } from "./pages/Home";
 
-const Home = lazy(() => import("./pages/Home").then((module) => ({ default: module.Home })));
 const About = lazy(() => import("./pages/About").then((module) => ({ default: module.About })));
 const Services = lazy(() => import("./pages/Services").then((module) => ({ default: module.Services })));
 const ServiceDetail = lazy(() => import("./pages/ServiceDetail").then((module) => ({ default: module.ServiceDetail })));
@@ -40,7 +39,7 @@ export default function App() {
       <ScrollToTop />
       {!isAdminRoute ? <BrandIntro settings={settings} /> : null}
       {!isAdminRoute ? <Navbar settings={settings} /> : null}
-      <Suspense fallback={<div className="min-h-screen bg-ink p-8 pt-32 text-white"><LoadingState /></div>}>
+      <Suspense fallback={<div className="min-h-screen bg-white" aria-hidden="true" />}>
         <PageTransition>
           <Routes>
             <Route path="/" element={<Home />} />
