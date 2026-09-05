@@ -45,6 +45,25 @@ function text(value: unknown, fallback = "") {
   return typeof value === "string" && value.trim() ? value : fallback;
 }
 
+const SEEDED_SERVICE_SLUGS = new Set(["digital-marketing", "social-media-marketing", "seo"]);
+const SEEDED_PROJECT_SLUGS = new Set(["brand-growth-campaign"]);
+
+function hasUploadedMedia(record: Record<string, unknown>) {
+  return Boolean(text(record.imageUrl ?? record.featuredImage ?? record.heroImage));
+}
+
+function isSeededService(record: Record<string, unknown>) {
+  const slug = text(record.slug).toLowerCase();
+  return SEEDED_SERVICE_SLUGS.has(slug) && !hasUploadedMedia(record);
+}
+
+function isSeededProject(record: Record<string, unknown>) {
+  const slug = text(record.slug).toLowerCase();
+  const sampleText = text(record.shortDescription ?? record.summary ?? record.description).toLowerCase();
+  const client = text(record.client).toLowerCase();
+  return SEEDED_PROJECT_SLUGS.has(slug) || client.includes("demo") || sampleText.includes("development sample");
+}
+
 function seoFrom(record: Record<string, unknown>, fallback: SEO): SEO {
   return {
     title: text(record.metaTitle ?? record.seoTitle ?? record.title, fallback.title),
@@ -208,6 +227,10 @@ function normalizePackage(record: Record<string, unknown>, index: number): Packa
     label: text(record.label, fallback.label),
     description: text(record.description, fallback.description),
     badge: text(record.badge, fallback.badge ?? ""),
+    price: text(record.price, fallback.price ?? ""),
+    category: text(record.category, fallback.category ?? ""),
+    timeline: text(record.timeline, fallback.timeline ?? ""),
+    bestFor: text(record.bestFor, fallback.bestFor ?? ""),
     cta: text(record.cta, fallback.cta),
     features: list(record.features).length ? list(record.features) : fallback.features
   };
@@ -324,8 +347,8 @@ export function useContent() {
     const storedInsights = readStored<Record<string, unknown>[]>("insights", []);
     const storedPackages = readStored<{ items?: Record<string, unknown>[] }>("packages", {});
     const storedPackageCategories = readStored<{ items?: Record<string, unknown>[] }>("packageCategories", {});
-    const serviceRecords = storedServices.length ? storedServices : remote.services?.length ? remote.services : [];
-    const projectRecords = storedProjects.length ? storedProjects : remote.projects?.length ? remote.projects : [];
+    const serviceRecords = (storedServices.length ? storedServices : remote.services?.length ? remote.services : []).filter((record) => !isSeededService(record));
+    const projectRecords = (storedProjects.length ? storedProjects : remote.projects?.length ? remote.projects : []).filter((record) => !isSeededProject(record));
     const videoRecords = storedVideos.length ? storedVideos : remote.videos?.length ? remote.videos : [];
     const faqRecords = storedFaqs.length ? storedFaqs : remote.faqs?.length ? remote.faqs : [];
     const statRecords = storedStats.length ? storedStats : remote.stats?.length ? remote.stats : [];

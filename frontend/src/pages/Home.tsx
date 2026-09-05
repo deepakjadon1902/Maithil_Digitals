@@ -72,7 +72,7 @@ export function Home() {
         <div className="mx-auto max-w-7xl">
           <SectionHeading eyebrow="What We Do" title="Everything you need to build a stronger digital presence." />
           {featuredServices.length ? (
-            <div className="hme-stagger mt-10 grid auto-rows-fr gap-5 md:grid-cols-2 lg:grid-cols-3">
+            <div className="fall-stagger mt-10 grid auto-rows-fr gap-5 md:grid-cols-2 lg:grid-cols-3">
               {featuredServices.map((service) => <ServiceCard key={service.slug} service={service} />)}
             </div>
           ) : <div className="mt-10"><EmptyState label="No services have been uploaded from the admin panel yet." /></div>}
@@ -127,11 +127,12 @@ export function Home() {
       <section className="bg-white px-4 py-16 text-navy sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <SectionHeading eyebrow="Packages" title="Find the right plan for your business." description="Flexible digital marketing and content packages designed for different business needs." />
-          <div className="hme-stagger mt-10 grid auto-rows-fr gap-5 md:grid-cols-3">
+          <div className="fall-stagger mt-10 grid auto-rows-fr gap-5 md:grid-cols-3">
             {packages.map((plan) => (
               <div key={plan.name} className="relative flex min-h-64 flex-col rounded-premium border border-navy/10 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-orange">
                 {plan.badge ? <span className="absolute right-5 top-5 rounded-full bg-orange px-3 py-1 text-xs font-black uppercase text-white">{plan.badge}</span> : null}
                 <h3 className="text-2xl font-black text-navy">{plan.name}</h3>
+                {plan.price ? <p className="mt-3 font-display text-2xl font-black text-orange">{plan.price}</p> : null}
                 <p className="mt-3 text-sm leading-7 text-navy/65">{plan.label}</p>
                 <Button className="mt-auto w-full" href="/packages">{plan.cta}</Button>
               </div>

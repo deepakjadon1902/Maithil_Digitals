@@ -3,7 +3,7 @@ import { useEffect } from "react";
 export function useScrollReveal() {
   useEffect(() => {
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const nodes = Array.from(document.querySelectorAll<HTMLElement>(".hme-reveal, .hme-stagger > *"));
+    const nodes = Array.from(document.querySelectorAll<HTMLElement>(".hme-reveal, .hme-stagger > *, .fall-stagger > *"));
 
     if (reduceMotion || !("IntersectionObserver" in window)) {
       nodes.forEach((node) => node.classList.add("hme-in-view"));

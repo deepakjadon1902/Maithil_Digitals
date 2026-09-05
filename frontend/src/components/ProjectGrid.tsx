@@ -8,7 +8,7 @@ export function ProjectGrid({ projects }: { projects: Project[] }) {
   }
 
   return (
-    <div className="hme-stagger stagger-masonry grid auto-rows-fr gap-5 md:grid-cols-2 xl:grid-cols-3">
+    <div className="fall-stagger stagger-masonry grid auto-rows-fr gap-5 md:grid-cols-2 xl:grid-cols-3">
       {projects.map((project, index) => <ProjectCard key={project.slug} project={project} large={index % 7 === 0 && projects.length > 4} />)}
     </div>
   );

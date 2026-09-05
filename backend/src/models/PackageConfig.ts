@@ -6,6 +6,10 @@ const packagePlanSchema = new Schema(
     label: { type: String, default: "" },
     description: { type: String, default: "" },
     badge: { type: String, default: "" },
+    price: { type: String, default: "" },
+    category: { type: String, default: "" },
+    timeline: { type: String, default: "" },
+    bestFor: { type: String, default: "" },
     cta: { type: String, default: "View Package" },
     features: [{ type: String }]
   },

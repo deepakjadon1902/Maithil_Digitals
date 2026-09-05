@@ -806,6 +806,26 @@ svg {
   transform: translateY(0);
 }
 
+.fall-stagger > * {
+  opacity: 0;
+  transform: translate3d(0, -4.5rem, 0) scale(0.96);
+  filter: blur(7px);
+  transition:
+    opacity 0.9s var(--ease-premium),
+    transform 0.95s var(--ease-premium),
+    filter 0.95s var(--ease-premium),
+    border-color 0.7s var(--ease-premium),
+    box-shadow 0.7s var(--ease-premium);
+  transition-delay: calc(var(--hme-stagger-index, 0) * 80ms);
+  will-change: transform, opacity, filter;
+}
+
+.fall-stagger > .hme-in-view {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+  filter: blur(0);
+}
+
 .word-drop {
   display: inline;
 }
@@ -1420,6 +1440,7 @@ svg {
 
   .hme-reveal,
   .hme-stagger > *,
+  .fall-stagger > *,
   .word-drop__word {
     opacity: 1;
     transform: none;

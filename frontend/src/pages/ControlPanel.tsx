@@ -23,7 +23,7 @@ import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from "re
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
 import { SEO } from "../components/SEO";
-import { packageCategories as fallbackPackageCategories } from "../data/fallback";
+import { packageCategories as fallbackPackageCategories, packages as fallbackPackages } from "../data/fallback";
 import { adminApi } from "../services/adminApi";
 import type { SiteSettings } from "../types/content";
 
@@ -324,7 +324,7 @@ function PackageSettings() {
   useEffect(() => {
     const stored = adminApi.getSingleton("packages") as { items?: Record<string, unknown>[] };
     const categoryStore = adminApi.getSingleton("packageCategories") as { items?: Record<string, unknown>[] };
-    setItems(stored.items ?? []);
+    setItems(stored.items ?? fallbackPackages);
     setCategories(categoryStore.items ?? fallbackPackageCategories);
   }, []);
 
@@ -335,7 +335,7 @@ function PackageSettings() {
     setCategories((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, [field]: value } : item));
   };
 
-  const add = () => setItems((current) => [...current, { name: "", label: "", description: "", badge: "", cta: "View Package", features: "" }]);
+  const add = () => setItems((current) => [...current, { name: "", label: "", description: "", badge: "", price: "", category: "", timeline: "", bestFor: "", cta: "View Package", features: "" }]);
   const addCategory = () => setCategories((current) => [...current, { title: "", description: "", services: "" }]);
   const remove = (index: number) => setItems((current) => current.filter((_, itemIndex) => itemIndex !== index));
   const removeCategory = (index: number) => setCategories((current) => current.filter((_, itemIndex) => itemIndex !== index));
@@ -355,6 +355,10 @@ function PackageSettings() {
             <div className="grid gap-4 md:grid-cols-2">
               <Field label="Package name" value={String(item.name ?? "")} onChange={(value) => update(index, "name", value)} placeholder="Growth" />
               <Field label="Badge" value={String(item.badge ?? "")} onChange={(value) => update(index, "badge", value)} placeholder="Most Popular" />
+              <Field label="Price" value={String(item.price ?? "")} onChange={(value) => update(index, "price", value)} placeholder="From Rs. 29,999/month" />
+              <Field label="Category" value={String(item.category ?? "")} onChange={(value) => update(index, "category", value)} placeholder="Schools" />
+              <Field label="Timeline" value={String(item.timeline ?? "")} onChange={(value) => update(index, "timeline", value)} placeholder="30 days" />
+              <Field label="Best for" value={String(item.bestFor ?? "")} onChange={(value) => update(index, "bestFor", value)} placeholder="Restaurants, cafes and salons" />
               <Field label="Short label" className="md:col-span-2" value={String(item.label ?? "")} onChange={(value) => update(index, "label", value)} placeholder="For businesses ready to build a consistent online presence." />
               <Field label="Description" textarea className="md:col-span-2" value={String(item.description ?? "")} onChange={(value) => update(index, "description", value)} placeholder="Explain who this package is for." />
               <Field label="Features" textarea value={Array.isArray(item.features) ? item.features.join(", ") : String(item.features ?? "")} onChange={(value) => update(index, "features", value)} placeholder="Monthly content calendar, Reels support, Creative posts" />

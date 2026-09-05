@@ -131,6 +131,10 @@ export type PackagePlan = {
   label: string;
   description: string;
   badge?: string;
+  price?: string;
+  category?: string;
+  timeline?: string;
+  bestFor?: string;
   cta: string;
   features: string[];
 };
